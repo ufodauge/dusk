@@ -1,12 +1,12 @@
-local baton = require 'baton'
+-- local baton = require 'init'
 
 local player = baton.new {
 	controls = {
-		left = {'key:left', 'axis:leftx-', 'button:dpleft'},
-		right = {'key:right', 'axis:leftx+', 'button:dpright'},
-		up = {'key:up', 'axis:lefty-', 'button:dpup'},
-		down = {'key:down', 'axis:lefty+', 'button:dpdown'},
-		action = {'key:x', 'button:a', 'mouse:1'},
+		left   = {'key:left',  'axis:leftx-', 'button:dpleft'},
+		right  = {'key:right', 'axis:leftx+', 'button:dpright'},
+		up     = {'key:up',    'axis:lefty-', 'button:dpup'},
+		down   = {'key:down',  'axis:lefty+', 'button:dpdown'},
+		action = {'key:x',     'button:a',    'mouse:1'},
 	},
 	pairs = {
 		move = {'left', 'right', 'up', 'down'}
@@ -15,12 +15,12 @@ local player = baton.new {
 	deadzone = .33,
 }
 
-local pairDisplayAlpha = 0
-local pairDisplayTargetAlpha = 0
-local buttonDisplayAlpha = 0
+local pairDisplayAlpha         = 0
+local pairDisplayTargetAlpha   = 0
+local buttonDisplayAlpha       = 0
 local buttonDisplayTargetAlpha = 0
 
-local updates = 0
+local updates    = 0
 local updateTime = 0
 
 function love.update(dt)
@@ -28,10 +28,11 @@ function love.update(dt)
 
 	player:update()
 
-	pairDisplayTargetAlpha = player:pressed 'move' and 1
-	                      or player:released 'move' and 1
-	                      or player:down 'move' and .5
+	pairDisplayTargetAlpha = player:pressed('move')  and 1
+	                      or player:released('move') and 1
+	                      or player:down('move')     and .5
 	                      or 0
+
 	if pairDisplayAlpha > pairDisplayTargetAlpha then
 		pairDisplayAlpha = pairDisplayAlpha - 4 * dt
 	end
@@ -39,9 +40,9 @@ function love.update(dt)
 		pairDisplayAlpha = pairDisplayTargetAlpha
 	end
 
-	buttonDisplayTargetAlpha = player:pressed 'action' and 1
-	                        or player:released 'action' and 1
-	                        or player:down 'action' and .5
+	buttonDisplayTargetAlpha = player:pressed('action')  and 1
+	                        or player:released('action') and 1
+	                        or player:down('action')     and .5
 	                        or 0
 	if buttonDisplayAlpha > buttonDisplayTargetAlpha then
 		buttonDisplayAlpha = buttonDisplayAlpha - 4 * dt

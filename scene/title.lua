@@ -4,28 +4,28 @@
 local LuiDebug = require('lib.luidebug'):getInstance()
 local Roomy    = require('lib.roomy'):getInstance()
 
----@class Dummy : Scene
-local Dummy = {}
+---@class Title : Scene
+local Title = {}
 
 
-function Dummy:enter(prev, ...)
+function Title:enter(prev, ...)
+    
+end
+
+
+function Title:update(dt)
 
 end
 
 
-function Dummy:update(dt)
+function Title:draw()
 
 end
 
 
-function Dummy:draw()
+function Title:leave(next, ...)
 
 end
 
 
-function Dummy:leave(next, ...)
-
-end
-
-
-return Dummy
+return Title

@@ -171,6 +171,14 @@ function LLDebug.new()
         obj.graph_fps.y = height - obj.graph_fps.height
     end)
 
+    obj.debug_menu:addToggler("Memory Graph", function ()
+        obj.graph_mem.display = not obj.graph_mem.display
+    end)
+
+    obj.debug_menu:addToggler("FPS Graph", function ()
+        obj.graph_fps.display = not obj.graph_fps.display
+    end)
+
 
     -- Display area for debug message
     --------------------------------------------------------------

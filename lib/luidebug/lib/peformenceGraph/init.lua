@@ -40,29 +40,31 @@ function debugGraph:new(type, x, y, width, height, delay, label, font)
     end
 
     ---@class DebugGraph
-    ---@field x      integer
-    ---@field y      integer
-    ---@field width  integer
-    ---@field height integer
-    ---@field delay  number
-    ---@field label  string
-    ---@field font   love.Font
-    ---@field data   integer[]
-    ---@field _max   integer
-    ---@field _time  integer
-    ---@field _type  string
+    ---@field x       integer
+    ---@field y       integer
+    ---@field width   integer
+    ---@field height  integer
+    ---@field delay   number
+    ---@field label   string
+    ---@field font    love.Font
+    ---@field display boolean
+    ---@field data    integer[]
+    ---@field _max    integer
+    ---@field _time   integer
+    ---@field _type   string
     local instance = {
-        x      = x or 0, -- X position
-        y      = y or 0, -- Y position
-        width  = width or 50, -- Graph width
-        height = height or 30, -- Graph height
-        delay  = delay or 0.5, -- Update delay
-        label  = label or type, -- Graph label
-        font   = font or love.graphics.newFont(8),
-        data   = {},
-        _max   = 0,
-        _time  = 0,
-        _type  = type
+        x       = x or 0, -- X position
+        y       = y or 0, -- Y position
+        width   = width or 50, -- Graph width
+        height  = height or 30, -- Graph height
+        delay   = delay or 0.5, -- Update delay
+        label   = label or type, -- Graph label
+        font    = font or love.graphics.newFont(8),
+        display = true,
+        data    = {},
+        _max    = 0,
+        _time   = 0,
+        _type   = type
     }
 
     -- Build base data
@@ -112,8 +114,12 @@ function debugGraph:new(type, x, y, width, height, delay, label, font)
         end
     end
 
+
     ---Drawing the graph
     function instance:draw()
+        if not self.display then
+            return
+        end
         -- Store the currently set font and change the font to our own
         local fontCache = love.graphics.getFont()
         love.graphics.setFont(self.font)
@@ -146,7 +152,9 @@ function debugGraph:new(type, x, y, width, height, delay, label, font)
         love.graphics.setFont(fontCache)
     end
 
+
     return instance
 end
+
 
 return debugGraph
