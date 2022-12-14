@@ -1,33 +1,60 @@
+local hex2tbl = require('lib.lume').color
+local palette = require('data.color_palette')
+
 return {
-    -- background
     {
-        background = {
-            'cyder'
+        {
+            _name = 'color',
+            { hex2tbl(palette.pink['50']) }
         },
-        bg_particle = {
-            'cyder'
-        }
+        {
+            _name = 'background'
+        },
+        -- bg_particle = {}
     },
-    -- player
     {
-        blob = {
+        {
+            _name = 'color',
+            { hex2tbl(palette.pink['500']) }
+        },
+        {
+            _name = 'blob',
             640, 300, 24
         },
-        player = {},
-        player_ui = {},
+        {
+            _name = 'player',
+        },
+        {
+            _name = 'player_ui',
+        },
     },
     {
-        block = {
+        {
+            _name = 'color',
+            { hex2tbl(palette.pink['300']) }
+        },
+        {
+            _name = 'block',
             0, 0, 40, 720
         },
     },
     {
-        block = {
+        {
+            _name = 'color',
+            { hex2tbl(palette.pink['300']) }
+        },
+        {
+            _name = 'block',
             40, 680, 1200, 40
         },
     },
     {
-        block = {
+        {
+            _name = 'color',
+            { hex2tbl(palette.pink['300']) }
+        },
+        {
+            _name = 'block',
             1240, 0, 40, 720
         },
     },

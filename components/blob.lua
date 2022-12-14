@@ -1,4 +1,10 @@
 --------------------------------------------------------------
+-- constants
+--------------------------------------------------------------
+local NODE_RADIUS = 2
+local PHYSICS_POLYGONS = require("data.constants").PHYSICS_POLYGONS
+
+--------------------------------------------------------------
 -- require
 --------------------------------------------------------------
 local Blob = require('lib.blob')
@@ -8,7 +14,7 @@ local LuiDebug = require('lib.luidebug'):getInstance()
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
-local lf = love.filesystem
+local lg = love.graphics
 
 
 local Component = require('class.component')
@@ -22,15 +28,31 @@ local BlobComponent = setmetatable({}, { __index = Component })
 
 
 ---@param dt number
----@param context Context?
+---@param context Context
 function BlobComponent:update(dt, context)
     self.blob:update()
 end
 
 
----@param context Context?
+---@param context Context
 function BlobComponent:draw(context)
-    self.blob:draw(LuiDebug.debug_menu.display)
+    lg.setColor(self.color)
+    self.blob:draw()
+    -- lg.setColor(self.color)
+    -- self.blob:draw('line')
+
+    if LuiDebug:getFlag(PHYSICS_POLYGONS) then
+        self.blob:drawDebug()
+    end
+end
+
+
+---@param context Context
+function BlobComponent:onAdd(context)
+    local color = context:get('color') --[[@as ColorComponent]]
+    if color then
+        self.color = color.color_table
+    end
 end
 
 
@@ -49,7 +71,7 @@ end
 
 ---@param world love.World
 function BlobComponent:createPhysicsObject(world)
-    self.blob = Blob.new(world, self.x, self.y, self.r)
+    self.blob = Blob.new(world, self.x, self.y, self.r, NODE_RADIUS)
 end
 
 
@@ -59,6 +81,7 @@ function BlobComponent.new(x, y, r)
 
     obj.x, obj.y = x, y
     obj.r = r
+    obj.color = { 1, 1, 1, 1 }
 
     local mt = getmetatable(obj)
     mt.__index = BlobComponent

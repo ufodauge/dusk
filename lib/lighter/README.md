@@ -14,6 +14,7 @@ Builds a visibility polygon and uses it as the stencil for drawing the light.
 As an optimization it uses a spatial map and calculates polygon bounding boxes on the fly so that only polygons within light radius get included in the visibility polygon calculations.
 
 ## Usage
+```lua
     local Lighter = require 'path.to.lighter'
 
     local lighter = Lighter()
@@ -45,6 +46,7 @@ As an optimization it uses a spatial map and calculates polygon bounding boxes o
     -- Clean up
     -- lighter:removeLight(light)
     -- lighter:removePolygon(wall)
+```
 
 ## Extra tip
 ### Drawing with a dimmer global illumination:

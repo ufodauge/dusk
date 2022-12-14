@@ -23,6 +23,7 @@ local NODE_RADIUS = 8
 ---@field kernel_fixture love.Fixture
 ---@field nodes {body: love.Body, fixture: love.Fixture, joint_to_kernel: love.Joint, joint_to_node: love.Joint}
 ---@field outer_points number[]
+---@field line_width number
 local Blob = {}
 
 
@@ -44,31 +45,32 @@ function Blob:update()
 end
 
 
----@param debug boolean?
-function Blob:draw(debug)
-    if debug then
-        for _, node in ipairs(self.nodes) do
-            lg.circle(
-                'line',
-                node.body:getX(),
-                node.body:getY(),
-                NODE_RADIUS)
-        end
-        love.graphics.setColor(1, 0.5, 0.5)
+function Blob:drawDebug()
+    local clr = { lg.getColor() }
+    lg.setColor(0.2, 0.4, 0.2)
+    for _, node in ipairs(self.nodes) do
         lg.circle(
             'line',
-            self.kernel_body:getX(),
-            self.kernel_body:getY(),
+            node.body:getX(),
+            node.body:getY(),
             NODE_RADIUS)
-        love.graphics.setColor(1, 1, 1)
     end
+    lg.circle(
+        'line',
+        self.kernel_body:getX(),
+        self.kernel_body:getY(),
+        NODE_RADIUS)
+    lg.setColor(clr)
+end
 
+
+---@param style? "line"|"fill"
+function Blob:draw(style)
+    style = style or "fill"
     local line_style = lg.getLineStyle()
-
-    lg.setColor(1, 0.2, 0.2)
     lg.setLineStyle('smooth')
-    lg.setLineWidth(1)
-    lg.polygon('line', self.outer_points)
+    lg.setLineWidth(self.line_width)
+    lg.polygon(style, self.outer_points)
     lg.setLineStyle(line_style)
 end
 
@@ -88,15 +90,20 @@ end
 ---@param x number
 ---@param y number
 ---@param r number radius
-function Blob.new(world, x, y, r)
+---@param nr number? node radius
+---@param lw number? line width
+function Blob.new(world, x, y, r, nr, lw)
+    nr = nr or NODE_RADIUS
+    lw = lw or 1
+
     local obj = {}
 
     local kernel_body    = lp.newBody(world, x, y, 'dynamic')
     local kernel_shape   = lp.newCircleShape(r / 4)
     local kernel_fixture = lp.newFixture(kernel_body, kernel_shape)
 
-    local node_shape = lp.newCircleShape(NODE_RADIUS)
-    local node_count = r / 2
+    local node_shape = lp.newCircleShape(nr)
+    local node_count = r
 
     local nodes = {}
 
@@ -145,6 +152,8 @@ function Blob.new(world, x, y, r)
     for i = 1, node_count * 2 do
         obj.outer_points[i] = 0
     end
+
+    obj.line_width = lw or 1
 
     return setmetatable(obj, { __index = Blob })
 end

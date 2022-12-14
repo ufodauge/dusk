@@ -27,6 +27,8 @@ love.assets = require('lib.cargo').init({
     }
 })
 
+LuiDebug:addFlag(require("data.constants").PHYSICS_POLYGONS)
+
 
 function love.load()
     Roomy:hook()

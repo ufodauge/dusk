@@ -42,6 +42,7 @@ local MessageArea = require(PATH .. 'class.messageArea')
 ---@field graph_mem    DebugGraph
 ---@field graph_fps    DebugGraph
 ---@field debug_menu   DebugMenu
+---@field flags        boolean[]
 ---@field message_area MessageArea
 local LLDebug = {}
 
@@ -114,6 +115,29 @@ end
 
 
 ---comment
+---@param name    string
+---@param default boolean?
+function LLDebug:addFlag(name, default)
+    self.flags[name] = default or false
+    self.debug_menu:addToggler(name, function()
+        self.flags[name] = not self.flags[name]
+    end)
+end
+
+
+---comment
+---@param name string
+---@return boolean
+function LLDebug:getFlag(name)
+    if self.flags[name] == nil then
+        print(('unset flag %s has been called.'):format(name))
+        return false
+    end
+    return self.flags[name]
+end
+
+
+---comment
 ---@param path string
 function LLDebug:setScenePath(path)
     self.debug_menu:setScenePath(path)
@@ -134,6 +158,7 @@ function LLDebug.new()
 
 
     obj.active = false -- activate flag
+    obj.flags = {}
 
 
     -- Director
@@ -171,11 +196,11 @@ function LLDebug.new()
         obj.graph_fps.y = height - obj.graph_fps.height
     end)
 
-    obj.debug_menu:addToggler("Memory Graph", function ()
+    obj.debug_menu:addToggler('Memory Graph', function()
         obj.graph_mem.display = not obj.graph_mem.display
     end)
 
-    obj.debug_menu:addToggler("FPS Graph", function ()
+    obj.debug_menu:addToggler('FPS Graph', function()
         obj.graph_fps.display = not obj.graph_fps.display
     end)
 

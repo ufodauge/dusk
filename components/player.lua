@@ -15,7 +15,7 @@ local LuiDebug = require('lib.luidebug'):getInstance()
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local POP_STRENGTH = 1000
+local POP_STRENGTH = 185
 
 
 local Component = require('class.component')
@@ -38,8 +38,7 @@ local PlayerComponent = setmetatable({}, { __index = Component })
 function PlayerComponent:update(dt, context)
     -- update positions with blobs
     --------------------------------------------------------------
-    local blob_comp = context:get('blob') --[[@as BlobComponent]]
-    self.x, self.y = blob_comp:getPosition()
+    self.x, self.y = self.blob_comp:getPosition()
 
 
     -- controlls
@@ -73,7 +72,7 @@ function PlayerComponent:update(dt, context)
     -- jump controlls
     --------------------------------------------------------------
     if self.baton:released('action') then
-        blob_comp.blob.kernel_body:applyLinearImpulse(
+        self.blob_comp.blob.kernel_body:applyLinearImpulse(
             POP_STRENGTH * math.cos(self.pop_angle) * self.pop_strength_rate,
             POP_STRENGTH * math.sin(self.pop_angle) * self.pop_strength_rate)
     end
@@ -92,7 +91,20 @@ end
 
 
 function PlayerComponent:draw()
-    lg.setColor(1, 1, 1)
+end
+
+
+---@param context Context
+function PlayerComponent:onAdd(context)
+    -- local color = context:get('color') --[[@as ColorComponent]]
+    -- if color then
+    --     self.color = color.color_table
+    -- end
+
+    local blob_comp = context:get('blob') --[[@as BlobComponent]]
+    if blob_comp then
+        self.blob_comp = blob_comp
+    end
 end
 
 
@@ -117,6 +129,8 @@ function PlayerComponent.new()
     --------------------------------------------------------------
     obj.pop_angle         = -math.pi / 2
     obj.pop_strength_rate = 0
+
+    obj.color = { 1, 1, 1, 1 }
 
 
     local mt = getmetatable(obj)

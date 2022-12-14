@@ -1,5 +1,5 @@
 ---@class GameObject
----@field private components Component[]
+---@field components Context
 local GameObject = {}
 
 ---@param component Component
@@ -7,6 +7,7 @@ local GameObject = {}
 function GameObject:addComponent(component, name)
     component.name = name
     table.insert(self.components, component)
+    component:onAdd(self.components)
 end
 
 
@@ -41,13 +42,16 @@ function GameObject.new()
     ---@class Context
     obj.components = {}
 
+    
     ---@param comp_name string
+    ---@return unknown
     function obj.components:get(comp_name)
         for i = 1, #obj.components do
             if obj.components[i].name == comp_name then
                 return obj.components[i]
             end
         end
+        return nil
     end
 
 

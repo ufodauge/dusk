@@ -67,6 +67,11 @@ function BGParticleComponent:draw(context)
 end
 
 
+function BGParticleComponent:onAdd(context)
+
+end
+
+
 function BGParticleComponent:delete()
 
 end

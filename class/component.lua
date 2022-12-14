@@ -13,6 +13,12 @@ function Component:draw(context)
 end
 
 
+---@param context Context?
+function Component:onAdd(context)
+    
+end
+
+
 function Component:delete()
 end
 

@@ -32,6 +32,7 @@ local Game = {}
 local current_level = 0 ---@type integer
 local instances     = {} ---@type GameObject[]
 local world         = nil ---@type love.World
+local effect        = nil
 
 
 ---@param prev Scene
@@ -66,11 +67,15 @@ function Game:enter(prev, level)
 
         -- add components
         --------------------------------------------------------------
-        for component_name, args in pairs(data) do
-            if Components[component_name] then
+        for _, comp_data in ipairs(data) do
+
+            local comp_name = comp_data._name
+            comp_data._name = nil
+
+            if Components[comp_name] then
                 -- create component
                 --------------------------------------------------------------
-                local comp = Components[component_name].new(unpack(args))
+                local comp = Components[comp_name].new(unpack(comp_data))
 
 
                 -- relate scene-based objects
@@ -80,15 +85,18 @@ function Game:enter(prev, level)
                 end
 
 
-                game_object:addComponent(comp, component_name)
+                game_object:addComponent(comp, comp_name)
             else
 
-                LuiDebug:log('Component: ' .. component_name .. ' has not been found.')
+                LuiDebug:log('Component: ' .. comp_name .. ' has not been found.')
             end
         end
 
         instances[#instances + 1] = game_object
     end
+
+
+    -- effect = moonshine(moonshine.effects.test)
 end
 
 
@@ -101,11 +109,13 @@ end
 
 
 function Game:draw()
+    -- effect(function()
     for _, instance in ipairs(instances) do
         if instance then
             instance:draw()
         end
     end
+    -- end)
 end
 
 

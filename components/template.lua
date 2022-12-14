@@ -16,6 +16,11 @@ function TemplateComponent:draw(context)
 end
 
 
+function TemplateComponent:onAdd(context)
+
+end
+
+
 function TemplateComponent:delete()
 
 end

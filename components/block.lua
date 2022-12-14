@@ -20,13 +20,15 @@ local Component = require('class.component')
 ---@field h number
 local BlockComponent = setmetatable({}, { __index = Component })
 
+
+---@param dt number
 function BlockComponent:update(dt)
     -- self.x, self.y = self.fixture:getBody():getPosition()
 end
 
 
 function BlockComponent:draw()
-    lg.setColor(0.1, 0.25, 0.5, 1)
+    lg.setColor(self.color)
     lg.rectangle('fill', self.x, self.y, self.w, self.h)
     lg.setColor(1, 1, 1, 1)
 end
@@ -45,6 +47,15 @@ function BlockComponent:createPhysicsObject(world)
 end
 
 
+---@param context Context
+function BlockComponent:onAdd(context)
+    local color = context:get('color') --[[@as ColorComponent]]
+    if color then
+        self.color = color.color_table
+    end
+end
+
+
 function BlockComponent:delete()
     self.fixture:destroy()
     self.body:destroy()
@@ -57,6 +68,7 @@ function BlockComponent.new(x, y, w, h)
 
     obj.x, obj.y = x, y
     obj.w, obj.h = w, h
+    obj.color = { 1, 1, 1, 1 }
 
     local mt = getmetatable(obj)
     mt.__index = BlockComponent

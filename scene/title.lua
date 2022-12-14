@@ -7,19 +7,16 @@ local Roomy    = require('lib.roomy'):getInstance()
 ---@class Title : Scene
 local Title = {}
 
-
 function Title:enter(prev, ...)
-    
+
 end
 
 
 function Title:update(dt)
-
 end
 
 
 function Title:draw()
-
 end
 
 

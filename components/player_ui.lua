@@ -31,16 +31,15 @@ local Component = require('class.component')
 ---@field y                 number
 ---@field pop_angle         number
 ---@field pop_strength_rate number
+---@field player            PlayerComponent
 local PlayerUiComponent = setmetatable({}, { __index = Component })
 
 ---@param dt number
 ---@param context Context
 function PlayerUiComponent:update(dt, context)
-    local player = context:get('player') --[[@as PlayerComponent]]
-
     -- track self position smoothly
     --------------------------------------------------------------
-    local x, y = player.x, player.y
+    local x, y = self.player.x, self.player.y
     if not self.sod then
         self.sod = SecondOrderDynamics(SOC_F, SOC_Z, SOC_R, Vector(x, y))
     end
@@ -51,14 +50,15 @@ function PlayerUiComponent:update(dt, context)
 
     -- get angle and strength
     --------------------------------------------------------------
-    self.pop_angle = player.pop_angle
-    self.pop_strength_rate = player.pop_strength_rate
+    self.pop_angle = self.player.pop_angle
+    self.pop_strength_rate = self.player.pop_strength_rate
 end
 
 
 ---@param context Context
 function PlayerUiComponent:draw(context)
     -- draw direction indicator ui
+    -- TODO: UI が画面外に行ってしまうことがあるので画面内に常駐するよう調整
     --------------------------------------------------------------
     lg.push()
     do
@@ -69,7 +69,7 @@ function PlayerUiComponent:draw(context)
 
         -- strength ui
         --------------------------------------------------------------
-        lg.setColor(0.6, 0.6, 1, 1)
+        lg.setColor(self.color)
         lg.circle('fill',
             POP_STRENGTH_UI_X_REL,
             POP_STRENGTH_UI_Y_REL,
@@ -83,7 +83,7 @@ function PlayerUiComponent:draw(context)
         -- angle ui
         --------------------------------------------------------------
         lg.rotate(self.pop_angle)
-        lg.setColor(0.6, 0.6, 1, 1)
+        lg.setColor(self.color)
         lg.polygon('fill', POP_ANGLE_UI_POINTS)
         lg.setColor(1, 1, 1, 1)
         lg.polygon('line', POP_ANGLE_UI_POINTS)
@@ -91,6 +91,20 @@ function PlayerUiComponent:draw(context)
         lg.setLineWidth(default_line_width)
     end
     lg.pop()
+end
+
+
+---@param context Context
+function PlayerUiComponent:onAdd(context)
+    local color = context:get('color') --[[@as ColorComponent]]
+    if color then
+        self.color = color.color_table
+    end
+
+    local player = context:get('player') --[[@as PlayerComponent]]
+    if player then
+        self.player = player
+    end
 end
 
 
@@ -102,6 +116,8 @@ end
 ---@return Component
 function PlayerUiComponent.new()
     local obj = Component.new()
+
+    obj.color = { 1, 1, 1, 1 }
 
     local mt = getmetatable(obj)
     mt.__index = PlayerUiComponent

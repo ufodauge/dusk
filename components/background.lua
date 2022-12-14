@@ -15,7 +15,7 @@ local Component = require('class.component')
 
 
 ---@class BackgroundComponent : Component
----@field bg_type string
+---@field color   RGBA
 ---@field image   love.Image
 ---@field effect  Moonshine
 local BackgroundComponent = setmetatable({}, { __index = Component })
@@ -29,8 +29,16 @@ end
 
 ---@param context Context
 function BackgroundComponent:draw(context)
-    lg.setColor(1, 1, 1)
-    lg.draw(self.image)
+    lg.setBackgroundColor(self.color)
+end
+
+
+---@param context Context
+function BackgroundComponent:onAdd(context)
+    local color = context:get('color') --[[@as ColorComponent]]
+    if color then
+        self.color = color.color_table
+    end
 end
 
 
@@ -44,7 +52,8 @@ end
 function BackgroundComponent.new(filename)
     local obj = Component.new()
 
-    obj.image = assets.image.bg[filename]
+    -- obj.image = assets.image.bg[filename]
+    obj.color = { 1, 1, 1, 1 }
 
     local mt = getmetatable(obj)
     mt.__index = BackgroundComponent
