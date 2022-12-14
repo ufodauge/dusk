@@ -4,9 +4,9 @@ return {
         background = {
             'cyder'
         },
-        bg_particle = {
-            'cyder'
-        }
+        -- bg_particle = {
+        --     'cyder'
+        -- }
     },
     -- player
     {

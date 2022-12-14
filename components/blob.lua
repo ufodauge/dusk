@@ -20,6 +20,7 @@ local Component = require('class.component')
 ---@field blob Blob
 local BlobComponent = setmetatable({}, { __index = Component })
 
+
 ---@param dt number
 ---@param context Context?
 function BlobComponent:update(dt, context)
@@ -29,7 +30,7 @@ end
 
 ---@param context Context?
 function BlobComponent:draw(context)
-    self.blob:draw(LuiDebug.active)
+    self.blob:draw(LuiDebug.debug_menu.display)
 end
 
 
@@ -40,6 +41,7 @@ function BlobComponent:delete()
 end
 
 
+---@return number, number
 function BlobComponent:getPosition()
     return self.blob.kernel_body:getPosition()
 end

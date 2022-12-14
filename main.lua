@@ -1,17 +1,24 @@
+local LuiDebug = require('lib.luidebug'):getInstance()
 --------------------------------------------------------------
--- LOCAL_LUA_DEBUGGER_VSCODE
+-- Debug
 --------------------------------------------------------------
 if os.getenv('LOCAL_LUA_DEBUGGER_VSCODE') == '1' then
     require('lldebugger').start()
+    LuiDebug:activate()
 end
+
+
+--------------------------------------------------------------
+-- shorthands
+--------------------------------------------------------------
+local lg = love.graphics
 
 
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug = require('lib.luidebug'):getInstance()
-local Roomy    = require('lib.roomy'):getInstance()
-Assets         = require('lib.cargo').init({
+local Roomy = require('lib.roomy'):getInstance()
+love.assets = require('lib.cargo').init({
     dir = 'assets',
     processors = {
         ['images/'] = function(image, filename)
@@ -24,7 +31,6 @@ Assets         = require('lib.cargo').init({
 function love.load()
     Roomy:hook()
 
-    LuiDebug:activate()
     LuiDebug:setRoomy(Roomy)
     LuiDebug:setScenePath('scene')
 end

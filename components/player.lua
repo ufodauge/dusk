@@ -1,13 +1,4 @@
 --------------------------------------------------------------
--- require
---------------------------------------------------------------
-local Baton               = require('lib.baton')
-local SecondOrderDynamics = require('lib.sos').SecondOrderDynamics
-local Vector              = require('lib.sos').Vector
-local LuiDebug            = require('lib.luidebug'):getInstance()
-
-
---------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
 local lf = love.filesystem
@@ -15,17 +6,16 @@ local lg = love.graphics
 
 
 --------------------------------------------------------------
+-- require
+--------------------------------------------------------------
+local Baton    = require('lib.baton')
+local LuiDebug = require('lib.luidebug'):getInstance()
+
+
+--------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local POP_ANGLE_UI_POINTS    = { 60, 0, 50, -5, 55, 0, 50, 5 }
-local POP_STRENGTH_UI_X_REL  = 80
-local POP_STRENGTH_UI_Y_REL  = -80
-local POP_STRENGTH_UI_RADIUS = 25
-local POP_STRENGTH           = 1000
-
-local SOC_F = 0.923
-local SOC_Z = 0.462
-local SOC_R = -0.231
+local POP_STRENGTH = 1000
 
 
 local Component = require('class.component')
@@ -49,17 +39,7 @@ function PlayerComponent:update(dt, context)
     -- update positions with blobs
     --------------------------------------------------------------
     local blob_comp = context:get('blob') --[[@as BlobComponent]]
-    local x, y = blob_comp:getPosition()
-
-    -- TODO 切り分けるべきではあるんだろうけどめんどくさい
-    -- self.x, self.y = context:get("player_ui") --[[@as PlayerUiComponent]]
-
-    if not self.sod then
-        self.sod = SecondOrderDynamics(SOC_F, SOC_Z, SOC_R, Vector(x, y))
-    end
-    local vec = self.sod:update(dt, Vector(x, y))
-
-    self.x, self.y = vec.x, vec.y
+    self.x, self.y = blob_comp:getPosition()
 
 
     -- controlls
@@ -89,6 +69,7 @@ function PlayerComponent:update(dt, context)
 
     end
 
+
     -- jump controlls
     --------------------------------------------------------------
     if self.baton:released('action') then
@@ -96,6 +77,7 @@ function PlayerComponent:update(dt, context)
             POP_STRENGTH * math.cos(self.pop_angle) * self.pop_strength_rate,
             POP_STRENGTH * math.sin(self.pop_angle) * self.pop_strength_rate)
     end
+
 
     if self.baton:down('action') then
         self.pop_strength_rate = self.pop_strength_rate + dt
@@ -111,40 +93,6 @@ end
 
 function PlayerComponent:draw()
     lg.setColor(1, 1, 1)
-
-    -- draw direction indicator
-    --------------------------------------------------------------
-    lg.push()
-    do
-        lg.translate(self.x, self.y)
-        local default_line_width = lg.getLineWidth()
-
-        lg.setLineWidth(2)
-
-        -- strength ui
-        --------------------------------------------------------------
-        lg.setColor(0.6, 0.6, 1, 1)
-        lg.circle('fill',
-            POP_STRENGTH_UI_X_REL,
-            POP_STRENGTH_UI_Y_REL,
-            POP_STRENGTH_UI_RADIUS * self.pop_strength_rate)
-        lg.setColor(1, 1, 1, 1)
-        lg.circle('line',
-            POP_STRENGTH_UI_X_REL,
-            POP_STRENGTH_UI_Y_REL,
-            POP_STRENGTH_UI_RADIUS)
-
-        -- angle ui
-        --------------------------------------------------------------
-        lg.rotate(self.pop_angle)
-        lg.setColor(0.6, 0.6, 1, 1)
-        lg.polygon('fill', POP_ANGLE_UI_POINTS)
-        lg.setColor(1, 1, 1, 1)
-        lg.polygon('line', POP_ANGLE_UI_POINTS)
-
-        lg.setLineWidth(default_line_width)
-    end
-    lg.pop()
 end
 
 
@@ -164,11 +112,6 @@ function PlayerComponent.new()
     --------------------------------------------------------------
     local config = lf.load('data/key_config.lua')()
     obj.baton = Baton.new(config)
-
-    LuiDebug:log(function()
-        return ('%d, %d'):format(obj.x, obj.y)
-    end)
-
 
     -- indicator status
     --------------------------------------------------------------

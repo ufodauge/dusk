@@ -133,9 +133,16 @@ function Manager:hook(options)
 	end
 	for _, callbackName in ipairs(callbacks) do
 		local oldCallback = love[callbackName]
-		love[callbackName] = function(...)
-			if oldCallback then oldCallback(...) end
-			self:emit(callbackName, ...)
+		if callbackName == 'draw' then
+			love[callbackName] = function(...)
+				self:emit(callbackName, ...)
+				if oldCallback then oldCallback(...) end
+			end
+		else
+			love[callbackName] = function(...)
+				if oldCallback then oldCallback(...) end
+				self:emit(callbackName, ...)
+			end
 		end
 	end
 end

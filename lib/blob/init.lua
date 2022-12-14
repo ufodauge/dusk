@@ -3,6 +3,13 @@
 --------------------------------------------------------------
 local lp = love.physics
 local lg = love.graphics
+local lm = love.math
+
+
+--------------------------------------------------------------
+-- requires
+--------------------------------------------------------------
+local lume = require('lib.lume')
 
 
 --------------------------------------------------------------
@@ -15,10 +22,25 @@ local NODE_RADIUS = 8
 ---@field kernel_body love.Body
 ---@field kernel_fixture love.Fixture
 ---@field nodes {body: love.Body, fixture: love.Fixture, joint_to_kernel: love.Joint, joint_to_node: love.Joint}
+---@field outer_points number[]
 local Blob = {}
 
 
 function Blob:update()
+    local outer_points = {}
+    for _, node in ipairs(self.nodes) do
+        local x0, y0 = self.kernel_body:getPosition()
+        local xn, yn = node.body:getPosition()
+        local dist = lume.distance(x0, y0, xn, yn)
+        local x = x0 - (x0 - xn) * (1 + NODE_RADIUS / dist)
+        local y = y0 - (y0 - yn) * (1 + NODE_RADIUS / dist)
+
+        table.insert(outer_points, x)
+        table.insert(outer_points, y)
+    end
+
+    self.outer_points = outer_points -- TODO: improve to splite curve
+    -- self.outer_points = lm.newBezierCurve(outer_points):render()
 end
 
 
@@ -40,13 +62,20 @@ function Blob:draw(debug)
             NODE_RADIUS)
         love.graphics.setColor(1, 1, 1)
     end
+
+    local line_style = lg.getLineStyle()
+
+    lg.setColor(1, 0.2, 0.2)
+    lg.setLineStyle('smooth')
+    lg.setLineWidth(1)
+    lg.polygon('line', self.outer_points)
+    lg.setLineStyle(line_style)
 end
 
 
----comment
 function Blob:destroy()
     for i = 1, #self.nodes do
-        --? joint の破棄は勝手にされてた
+        -- ? joint の破棄は勝手にされてた
         self.nodes[i].fixture:destroy()
         self.nodes[i].body:destroy()
     end
@@ -55,21 +84,16 @@ function Blob:destroy()
 end
 
 
----comment
 ---@param world love.World
 ---@param x number
 ---@param y number
 ---@param r number radius
----@param s number?
----@param t any?
-function Blob.new(world, x, y, r, s, t)
+function Blob.new(world, x, y, r)
     local obj = {}
 
     local kernel_body    = lp.newBody(world, x, y, 'dynamic')
     local kernel_shape   = lp.newCircleShape(r / 4)
     local kernel_fixture = lp.newFixture(kernel_body, kernel_shape)
-
-    -- kernelfixture:setMask(1)
 
     local node_shape = lp.newCircleShape(NODE_RADIUS)
     local node_count = r / 2
@@ -88,7 +112,6 @@ function Blob.new(world, x, y, r, s, t)
         local node_fixture = lp.newFixture(node_body, node_shape)
         node_fixture:setFriction(30)
         node_fixture:setRestitution(0)
-        -- node_fixture:setUserData(i)
 
         local node_joint = lp.newDistanceJoint(
             kernel_body, node_body, node_x, node_y, node_x, node_y, false)
@@ -96,17 +119,15 @@ function Blob.new(world, x, y, r, s, t)
         node_joint:setFrequency(12 * (20 / r))
 
         table.insert(nodes, {
-            body            = node_body,
-            fixture         = node_fixture,
-            -- joint_to_kernel = node_joint,
-            -- joint_to_node   = nil,
+            body    = node_body,
+            fixture = node_fixture,
         })
     end
 
     for i = 1, #nodes do
         local j = (i % #nodes) + 1
         -- discard
-        local joint = lp.newDistanceJoint(
+        lp.newDistanceJoint(
             nodes[i].body,
             nodes[j].body,
             nodes[i].body:getX(),
@@ -114,21 +135,16 @@ function Blob.new(world, x, y, r, s, t)
             nodes[j].body:getX(),
             nodes[j].body:getY(),
             false)
-        -- nodes[i].joint_to_node = joint
     end
-
-    -- --set tesselation and smoothing
-    -- local smooth = s or 2
-
-    -- local tess = t or 4
-    -- self.tess = {}
-    -- for i = 1, tess do
-    --     self.tess[i] = {}
-    -- end
 
     obj.kernel_body = kernel_body
     obj.kernel_fixture = kernel_fixture
     obj.nodes = nodes
+
+    obj.outer_points = {}
+    for i = 1, node_count * 2 do
+        obj.outer_points[i] = 0
+    end
 
     return setmetatable(obj, { __index = Blob })
 end

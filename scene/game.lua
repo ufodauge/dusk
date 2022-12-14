@@ -3,6 +3,7 @@
 --------------------------------------------------------------
 local lf = love.filesystem
 local lp = love.physics
+local lg = love.graphics
 
 
 --------------------------------------------------------------
@@ -18,13 +19,15 @@ local LuiDebug   = require('lib.luidebug'):getInstance()
 local Roomy      = require('lib.roomy'):getInstance()
 local GameObject = require('class.gameobject')
 local lume       = require('lib.lume')
+local moonshine  = require('lib.moonshine')
 
 --------------------------------------------------------------
 -- Components
 --------------------------------------------------------------
 local Components = require('lib.cargo').init('components')
 
-local game = {}
+---@class GameScene : Scene
+local Game = {}
 
 local current_level = 0 ---@type integer
 local instances     = {} ---@type GameObject[]
@@ -33,7 +36,7 @@ local world         = nil ---@type love.World
 
 ---@param prev Scene
 ---@param level integer
-function game:enter(prev, level)
+function Game:enter(prev, level)
     level = level or 1
 
     -- load entire level data
@@ -89,7 +92,7 @@ function game:enter(prev, level)
 end
 
 
-function game:update(dt)
+function Game:update(dt)
     world:update(dt)
     for _, instance in ipairs(instances) do
         instance:update(dt)
@@ -97,7 +100,7 @@ function game:update(dt)
 end
 
 
-function game:draw()
+function Game:draw()
     for _, instance in ipairs(instances) do
         if instance then
             instance:draw()
@@ -107,7 +110,7 @@ end
 
 
 ---@param next Scene
-function game:leave(next)
+function Game:leave(next)
     for i = #instances, 1, -1 do
         if instances[i].delete then
             instances[i]:delete()
@@ -118,4 +121,4 @@ function game:leave(next)
 end
 
 
-return game
+return Game

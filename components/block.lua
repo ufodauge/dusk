@@ -26,8 +26,8 @@ end
 
 
 function BlockComponent:draw()
-    lg.setColor(0.6, 0.6, 0.6, 1)
-    lg.rectangle('line', self.x, self.y, self.w, self.h)
+    lg.setColor(0.1, 0.25, 0.5, 1)
+    lg.rectangle('fill', self.x, self.y, self.w, self.h)
     lg.setColor(1, 1, 1, 1)
 end
 
