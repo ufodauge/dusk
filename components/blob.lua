@@ -1,8 +1,9 @@
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local NODE_RADIUS = 2
+local NODE_RADIUS      = 2
 local PHYSICS_POLYGONS = require('data.constants').PHYSICS_POLYGONS
+local CATEGORY         = require('data.box2d_category')
 
 --------------------------------------------------------------
 -- require
@@ -20,10 +21,12 @@ local lg = love.graphics
 local Component = require('class.component')
 
 ---@class BlobComponent : Component
----@field color    ColorComponent
----@field position PositionComponent
----@field radius   RadiusComponent
----@field blob     Blob
+---@field color     ColorComponent
+---@field position  PositionComponent
+---@field radius    RadiusComponent
+---@field blob      Blob
+---@field category  integer
+---@field fixed     boolean
 local BlobComponent = setmetatable({}, { __index = Component })
 
 
@@ -80,11 +83,16 @@ function BlobComponent:createPhysicsObject(world)
         world,
         self.position.x, self.position.y,
         self.radius.r - NODE_RADIUS * 2, NODE_RADIUS)
+
+    if self.fixed then
+        self.blob:fixPosition()
+    end
 end
 
 
+---@param fixed boolean?
 ---@return BlobComponent
-function BlobComponent.new(name)
+function BlobComponent.new(name, fixed)
     local obj = Component.new(name)
 
     obj.color    = nil
@@ -92,6 +100,8 @@ function BlobComponent.new(name)
     obj.raidus   = nil
 
     obj.blob = nil
+
+    obj.fixed    = fixed or false
 
     local mt = getmetatable(obj)
     mt.__index = BlobComponent

@@ -6,6 +6,7 @@ local Component = require('class.component')
 ---@field radius   RadiusComponent
 ---@field light    any
 ---@field world    any
+---@field mul      number
 local LightingComponent = setmetatable({}, { __index = Component })
 
 ---@param dt number
@@ -35,12 +36,12 @@ function LightingComponent:setLightWorld(world)
         self.color.color_table[1],
         self.color.color_table[2],
         self.color.color_table[3],
-        self.radius.r)
+        self.radius.r * self.mul)
 end
 
 
 ---@return Component
-function LightingComponent.new(name)
+function LightingComponent.new(name, mul)
     local obj = Component.new(name)
 
     obj.position = nil
@@ -49,7 +50,9 @@ function LightingComponent.new(name)
 
     obj.light = nil
     obj.world = nil
-    
+
+    obj.mul = mul or 1
+
     local mt = getmetatable(obj)
     mt.__index = LightingComponent
     return setmetatable(obj, mt)

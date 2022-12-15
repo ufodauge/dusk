@@ -16,6 +16,7 @@ local LuiDebug = require('lib.luidebug'):getInstance()
 -- constants
 --------------------------------------------------------------
 local POP_STRENGTH = 185
+local CATEGORY = require('data.box2d_category')
 
 
 local Component = require('class.component')
@@ -88,6 +89,7 @@ end
 ---@param context Context
 function PlayerComponent:onAdd(context)
     self.blob = context:get('blob')
+    self.blob.blob:setCategory(CATEGORY.PLAYER)
 end
 
 

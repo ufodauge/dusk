@@ -7,7 +7,7 @@ return {
         tilt_left  = { 'key:q', 'button:leftshoulder' },
         tilt_right = { 'key:e', 'button:rightshoulder' },
         action     = { 'key:j', 'button:a' },
-        cancel     = { 'key:k', 'button:b' },
+        cancel     = { 'key:k', 'button:b' }
     },
     pairs = {
         move = { 'left', 'right', 'up', 'down' }

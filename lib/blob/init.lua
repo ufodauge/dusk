@@ -64,9 +64,23 @@ function Blob:drawDebug()
 end
 
 
+---@param category integer
+function Blob:setCategory(category)
+    self.kernel_fixture:setCategory(category)
+    for i = 1, #self.nodes do
+        self.nodes[i].fixture:setCategory(category)
+    end
+end
+
+
+function Blob:fixPosition()
+    self.kernel_body:setType('static')
+end
+
+
 ---@param style? "line"|"fill"
 function Blob:draw(style)
-    style = style or "fill"
+    style = style or 'fill'
     local line_style = lg.getLineStyle()
     lg.setLineStyle('smooth')
     lg.setLineWidth(self.line_width)

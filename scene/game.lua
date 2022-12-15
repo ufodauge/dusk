@@ -11,16 +11,18 @@ local lg = love.graphics
 --------------------------------------------------------------
 local WORLD_GRAVITY_X = 0
 local WORLD_GRAVITY_Y = 512
+local CATEGORY = require('data.box2d_category')
 
 
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug   = require('lib.luidebug'):getInstance()
-local Roomy      = require('lib.roomy'):getInstance()
-local GameObject = require('class.gameobject')
-local lume       = require('lib.lume')
-local LightWorld = require('lib.lightworld.lib')
+local LuiDebug    = require('lib.luidebug'):getInstance()
+local Roomy       = require('lib.roomy'):getInstance()
+local GameObject  = require('class.gameobject')
+local lume        = require('lib.lume')
+local LightWorld  = require('lib.lightworld.lib')
+local ResultScene = require('scene.result')
 
 
 --------------------------------------------------------------
@@ -30,7 +32,7 @@ local Components = require('lib.cargo').init('components')
 
 
 ---@class GameScene : Scene
-local Game = {}
+local GameScene = {}
 
 local current_level = 0 ---@type integer
 local instances     = {} ---@type GameObject[]
@@ -40,7 +42,7 @@ local light_world   = nil
 
 ---@param prev Scene
 ---@param level integer
-function Game:enter(prev, level)
+function GameScene:enter(prev, level)
     -- load entire level data
     --------------------------------------------------------------
     current_level = level or 1
@@ -75,6 +77,7 @@ function Game:enter(prev, level)
     light_world = LightWorld({
          ambient = { 0.8, 0.8, 0.8 }
     })
+    light_world.post_shader:addEffect('tilt_shift')
 
 
     --create objects
@@ -116,7 +119,12 @@ function Game:enter(prev, level)
 end
 
 
-function Game:update(dt)
+function GameScene:resume(prev, ...)
+    print('resumed')
+end
+
+
+function GameScene:update(dt)
     world:update(dt)
     light_world:update(dt)
 
@@ -126,7 +134,7 @@ function Game:update(dt)
 end
 
 
-function Game:draw()
+function GameScene:draw()
     light_world:draw(function()
         love.graphics.clear()
         for _, instance in ipairs(instances) do
@@ -138,8 +146,13 @@ function Game:draw()
 end
 
 
+function GameScene:pause(next, ...)
+    print('paused')
+end
+
+
 ---@param next Scene
-function Game:leave(next)
+function GameScene:leave(next)
     for i = #instances, 1, -1 do
         if instances[i].delete then
             instances[i]:delete()
@@ -150,4 +163,11 @@ function Game:leave(next)
 end
 
 
-return Game
+-- events
+--------------------------------------------------------------
+function GameScene:goaled(...)
+    Roomy:push(ResultScene)
+end
+
+
+return GameScene

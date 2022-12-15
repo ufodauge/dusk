@@ -4,6 +4,7 @@
     ],
     "Lua.runtime.version": "LuaJIT",
     "Lua.diagnostics.disable": [
-        "different-requires"
+        "different-requires",
+        "duplicate-set-field"
     ]
 }

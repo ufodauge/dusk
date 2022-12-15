@@ -19,7 +19,7 @@ local POP_STRENGTH_UI_X_REL  = 70
 local POP_STRENGTH_UI_Y_REL  = -70
 local POP_STRENGTH_UI_RADIUS = 30
 
-local SOC_F = 0.269
+local SOC_F = 0.615
 local SOC_Z = 2.231
 local SOC_R = 1.885
 
