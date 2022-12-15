@@ -16,6 +16,7 @@ function TemplateComponent:draw(context)
 end
 
 
+---@param context Context
 function TemplateComponent:onAdd(context)
 
 end
@@ -27,8 +28,8 @@ end
 
 
 ---@return Component
-function TemplateComponent.new()
-    local obj = Component.new()
+function TemplateComponent.new(name)
+    local obj = Component.new(name)
 
     local mt = getmetatable(obj)
     mt.__index = TemplateComponent

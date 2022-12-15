@@ -1,6 +1,5 @@
 ---@class Component
 local Component = {}
-Component.param = {}
 
 ---@param dt number
 ---@param context Context?
@@ -24,8 +23,11 @@ end
 
 
 ---@return Component
-function Component.new()
+function Component.new(name)
+    assert(name, "there's no name of Component.")
     local obj = {}
+
+    obj._name = name
 
     return setmetatable(obj, { __index = Component })
 end

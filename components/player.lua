@@ -22,25 +22,16 @@ local Component = require('class.component')
 
 
 ---@class PlayerComponent : Component
----@field x            number
----@field y            number
----@field r            number
----@field blob         Blob
----@field pop_angle    number
+---@field blob              BlobComponent
+---@field pop_angle         number
 ---@field pop_strength_rate number
----@field sod          SecondOrderDynamics
----@field baton        any
+---@field baton             any
 local PlayerComponent = setmetatable({}, { __index = Component })
 
 ---comment
 ---@param dt number
 ---@param context Context
 function PlayerComponent:update(dt, context)
-    -- update positions with blobs
-    --------------------------------------------------------------
-    self.x, self.y = self.blob_comp:getPosition()
-
-
     -- controlls
     --------------------------------------------------------------
     self.baton:update()
@@ -72,7 +63,7 @@ function PlayerComponent:update(dt, context)
     -- jump controlls
     --------------------------------------------------------------
     if self.baton:released('action') then
-        self.blob_comp.blob.kernel_body:applyLinearImpulse(
+        self.blob:applyLinearImpulse(
             POP_STRENGTH * math.cos(self.pop_angle) * self.pop_strength_rate,
             POP_STRENGTH * math.sin(self.pop_angle) * self.pop_strength_rate)
     end
@@ -96,15 +87,7 @@ end
 
 ---@param context Context
 function PlayerComponent:onAdd(context)
-    -- local color = context:get('color') --[[@as ColorComponent]]
-    -- if color then
-    --     self.color = color.color_table
-    -- end
-
-    local blob_comp = context:get('blob') --[[@as BlobComponent]]
-    if blob_comp then
-        self.blob_comp = blob_comp
-    end
+    self.blob = context:get('blob')
 end
 
 
@@ -113,14 +96,16 @@ end
 
 
 ---@return PlayerComponent
-function PlayerComponent.new()
-    local obj = Component.new()
+function PlayerComponent.new(name)
+    local obj = Component.new(name)
 
-    obj.x, obj.y = 0, 0
-    obj.sod = nil
+    obj.position = nil
+    obj.blob     = nil
 
     -- load keyconfig
-    -- TODO: the codes below is only to lode default config
+    --[[
+        TODO: the codes below is only to lode default config
+    ]]
     --------------------------------------------------------------
     local config = lf.load('data/key_config.lua')()
     obj.baton = Baton.new(config)
@@ -129,9 +114,6 @@ function PlayerComponent.new()
     --------------------------------------------------------------
     obj.pop_angle         = -math.pi / 2
     obj.pop_strength_rate = 0
-
-    obj.color = { 1, 1, 1, 1 }
-
 
     local mt = getmetatable(obj)
     mt.__index = PlayerComponent

@@ -1,8 +1,9 @@
 --------------------------------------------------------------
 -- Const
 --------------------------------------------------------------
-local DEBUG_MENU_DIR_NAME_TOGGLE = 'toggle'
-local DEBUG_MENU_DIR_NAME_SCENE  = 'scene'
+local DEBUG_MENU_DIR_NAME_TOGGLE    = 'toggle'
+local DEBUG_MENU_DIR_NAME_CLEAR_LOG = 'clear'
+local DEBUG_MENU_DIR_NAME_SCENE     = 'scene'
 
 
 --------------------------------------------------------------
@@ -56,6 +57,7 @@ end
 ---@field entry_manager  EntryManager
 ---@field roomy          Roomy
 ---@field current_dir    Directory
+---@field luidebug       LLDebug
 ---@field cursor_index   integer
 ---@field x              integer
 ---@field y              integer
@@ -150,6 +152,11 @@ function DebugMenu:setRoomy(instance)
 end
 
 
+function DebugMenu:setMainInstance(luidebug)
+    self.luidebug = luidebug
+end
+
+
 ---comment
 ---@param debugmenu DebugMenu
 ---@param path      string
@@ -175,7 +182,7 @@ local function create_scene_executables(debugmenu, path, dir)
 
             if errmsg then
                 -- scene file is somewhat broken
-                print(errmsg)
+                debugmenu.luidebug:log(errmsg)
 
             else
                 -- create executable to switch scene
@@ -240,6 +247,11 @@ function DebugMenu.new(x, y)
 
     -- States
     rootDir:add(Directory.new(DEBUG_MENU_DIR_NAME_SCENE))
+
+    -- clear log
+    rootDir:add(Executable.new(DEBUG_MENU_DIR_NAME_CLEAR_LOG, function()
+        obj.luidebug:clearLog()
+    end))
 
     -- Quit
     rootDir:add(Executable.new('quit', function()
@@ -329,12 +341,13 @@ function DebugMenu.new(x, y)
                         ---@diagnostic disable-next-line: undefined-field
                         return ent:execute()
                     end, function(msg)
-                        print(msg)
+                        obj.luidebug:log(debug.traceback(msg))
+                        print(debug.traceback(msg))
                         return nil
                     end)
 
-                    print(('Exec: %s'):format(tostring(ok)))
-                    print(result)
+                    obj.luidebug:log(('Exec: %s'):format(tostring(ok)))
+                    obj.luidebug:log(result)
 
                 else
                     error('unreachable!')

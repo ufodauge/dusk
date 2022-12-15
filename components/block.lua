@@ -14,30 +14,24 @@ local RESISTITUTION = 0.8
 local Component = require('class.component')
 
 ---@class BlockComponent : Component
----@field x number
----@field y number
----@field w number
----@field h number
+---@field color    ColorComponent
+---@field position PositionComponent
+---@field size     SizeComponent
+---@field body     love.Body
+---@field fixture  love.Fixture
 local BlockComponent = setmetatable({}, { __index = Component })
-
-
----@param dt number
-function BlockComponent:update(dt)
-    -- self.x, self.y = self.fixture:getBody():getPosition()
-end
-
-
-function BlockComponent:draw()
-    lg.setColor(self.color)
-    lg.rectangle('fill', self.x, self.y, self.w, self.h)
-    lg.setColor(1, 1, 1, 1)
-end
 
 
 ---@param world love.World
 function BlockComponent:createPhysicsObject(world)
-    local body    = lp.newBody(world, self.x + self.w / 2, self.y + self.h / 2, 'static')
-    local shape   = lp.newRectangleShape(self.w, self.h)
+    local body    = lp.newBody(
+        world,
+        self.position.x + self.size.w / 2,
+        self.position.y + self.size.h / 2,
+        'static')
+    local shape   = lp.newRectangleShape(
+        self.size.w,
+        self.size.h)
     local fixture = lp.newFixture(body, shape)
 
     fixture:setRestitution(RESISTITUTION)
@@ -49,10 +43,9 @@ end
 
 ---@param context Context
 function BlockComponent:onAdd(context)
-    local color = context:get('color') --[[@as ColorComponent]]
-    if color then
-        self.color = color.color_table
-    end
+    self.color    = context:get('color')
+    self.position = context:get('position')
+    self.size     = context:get('size')
 end
 
 
@@ -63,12 +56,15 @@ end
 
 
 ---@return BlockComponent
-function BlockComponent.new(x, y, w, h)
-    local obj = Component.new()
+function BlockComponent.new(name)
+    local obj = Component.new(name)
 
-    obj.x, obj.y = x, y
-    obj.w, obj.h = w, h
-    obj.color = { 1, 1, 1, 1 }
+    obj.color    = nil
+    obj.position = nil
+    obj.size     = nil
+
+    obj.fixture = nil
+    obj.body    = nil
 
     local mt = getmetatable(obj)
     mt.__index = BlockComponent

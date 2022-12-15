@@ -12,6 +12,7 @@ local lg = love.graphics
 local WORLD_GRAVITY_X = 0
 local WORLD_GRAVITY_Y = 512
 
+
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
@@ -19,12 +20,14 @@ local LuiDebug   = require('lib.luidebug'):getInstance()
 local Roomy      = require('lib.roomy'):getInstance()
 local GameObject = require('class.gameobject')
 local lume       = require('lib.lume')
-local moonshine  = require('lib.moonshine')
+local LightWorld = require('lib.lightworld.lib')
+
 
 --------------------------------------------------------------
 -- Components
 --------------------------------------------------------------
 local Components = require('lib.cargo').init('components')
+
 
 ---@class GameScene : Scene
 local Game = {}
@@ -32,30 +35,46 @@ local Game = {}
 local current_level = 0 ---@type integer
 local instances     = {} ---@type GameObject[]
 local world         = nil ---@type love.World
-local effect        = nil
+local light_world   = nil
 
 
 ---@param prev Scene
 ---@param level integer
 function Game:enter(prev, level)
-    level = level or 1
-
     -- load entire level data
     --------------------------------------------------------------
-    current_level = level
+    current_level = level or 1
 
-    local chunk, errmsg = lf.load(('data/level/%d.lua'):format(level))
-    -- TODO: make it safely
+    local chunk, errmsg = lf.load(('data/level/%d.lua'):format(current_level))
+    --[[
+        TODO: make it safely
+    ]]
     if errmsg then
         error(errmsg)
     end
     local components_data = chunk()
 
 
+    --[[
+        TODO: ゲームオブジェクト化
+        そもそもすべきか？
+    ]]
     -- physics world
     --------------------------------------------------------------
     world = lp.newWorld()
     world:setGravity(WORLD_GRAVITY_X, WORLD_GRAVITY_Y)
+
+
+    --[[
+        TODO: ゲームオブジェクト化
+        draw 関数全体をラップする必要があるができるのか？？？
+        多分しなくていい気がするけどどうでしょう
+    ]]
+    -- light world
+    --------------------------------------------------------------
+    light_world = LightWorld({
+         ambient = { 0.8, 0.8, 0.8 }
+    })
 
 
     --create objects
@@ -69,14 +88,13 @@ function Game:enter(prev, level)
         --------------------------------------------------------------
         for _, comp_data in ipairs(data) do
 
-            local comp_name = comp_data._name
-            comp_data._name = nil
+            local comp_name = comp_data[1]
 
             if Components[comp_name] then
                 -- create component
                 --------------------------------------------------------------
                 local comp = Components[comp_name].new(unpack(comp_data))
-
+                game_object:addComponent(comp, comp_name)
 
                 -- relate scene-based objects
                 --------------------------------------------------------------
@@ -84,8 +102,9 @@ function Game:enter(prev, level)
                     comp:createPhysicsObject(world)
                 end
 
-
-                game_object:addComponent(comp, comp_name)
+                if comp.setLightWorld then
+                    comp:setLightWorld(light_world)
+                end
             else
 
                 LuiDebug:log('Component: ' .. comp_name .. ' has not been found.')
@@ -94,14 +113,13 @@ function Game:enter(prev, level)
 
         instances[#instances + 1] = game_object
     end
-
-
-    -- effect = moonshine(moonshine.effects.test)
 end
 
 
 function Game:update(dt)
     world:update(dt)
+    light_world:update(dt)
+
     for _, instance in ipairs(instances) do
         instance:update(dt)
     end
@@ -109,13 +127,14 @@ end
 
 
 function Game:draw()
-    -- effect(function()
-    for _, instance in ipairs(instances) do
-        if instance then
-            instance:draw()
+    light_world:draw(function()
+        love.graphics.clear()
+        for _, instance in ipairs(instances) do
+            if instance then
+                instance:draw()
+            end
         end
-    end
-    -- end)
+    end)
 end
 
 

@@ -37,8 +37,8 @@ end
 
 ---@param color_table RGBA
 ---@return Component
-function ColorComponent.new(color_table)
-    local obj = Component.new()
+function ColorComponent.new(name, color_table)
+    local obj = Component.new(name)
 
     obj.color_table = color_table
 

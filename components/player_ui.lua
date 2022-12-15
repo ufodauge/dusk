@@ -14,39 +14,32 @@ local lg = love.graphics
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local POP_ANGLE_UI_POINTS    = { 60, 0, 50, -5, 55, 0, 50, 5 }
-local POP_STRENGTH_UI_X_REL  = 80
-local POP_STRENGTH_UI_Y_REL  = -80
-local POP_STRENGTH_UI_RADIUS = 25
+local POP_ANGLE_UI_POINTS    = { 60, 0, 45, -10, 45, 10 }
+local POP_STRENGTH_UI_X_REL  = 70
+local POP_STRENGTH_UI_Y_REL  = -70
+local POP_STRENGTH_UI_RADIUS = 30
 
-local SOC_F = 0.923
-local SOC_Z = 0.462
-local SOC_R = -0.231
+local SOC_F = 0.269
+local SOC_Z = 2.231
+local SOC_R = 1.885
 
 
 local Component = require('class.component')
 
 ---@class PlayerUiComponent : Component
----@field x                 number
----@field y                 number
----@field pop_angle         number
----@field pop_strength_rate number
----@field player            PlayerComponent
+---@field x        number # ui's origin
+---@field y        number # ui's origin
+---@field player   PlayerComponent
+---@field position PositionComponent
+---@field color    ColorComponent
+---@field sod      SecondOrderDynamics
 local PlayerUiComponent = setmetatable({}, { __index = Component })
 
 ---@param dt number
 ---@param context Context
 function PlayerUiComponent:update(dt, context)
-    -- track self position smoothly
-    --------------------------------------------------------------
-    local x, y = self.player.x, self.player.y
-    if not self.sod then
-        self.sod = SecondOrderDynamics(SOC_F, SOC_Z, SOC_R, Vector(x, y))
-    end
-    local vec = self.sod:update(dt, Vector(x, y))
-
+    local vec = self.sod:update(dt, Vector(self.position.x, self.position.y))
     self.x, self.y = vec.x, vec.y
-
 
     -- get angle and strength
     --------------------------------------------------------------
@@ -58,22 +51,23 @@ end
 ---@param context Context
 function PlayerUiComponent:draw(context)
     -- draw direction indicator ui
-    -- TODO: UI が画面外に行ってしまうことがあるので画面内に常駐するよう調整
+    --[[
+        TODO: UI が画面外に行ってしまうことがあるので画面内に常駐するよう調整]]
     --------------------------------------------------------------
     lg.push()
     do
         lg.translate(self.x, self.y)
         local default_line_width = lg.getLineWidth()
 
-        lg.setLineWidth(2)
+        lg.setLineWidth(1)
 
         -- strength ui
         --------------------------------------------------------------
-        lg.setColor(self.color)
+        lg.setColor(self.color.color_table)
         lg.circle('fill',
             POP_STRENGTH_UI_X_REL,
             POP_STRENGTH_UI_Y_REL,
-            POP_STRENGTH_UI_RADIUS * self.pop_strength_rate)
+            POP_STRENGTH_UI_RADIUS * self.player.pop_strength_rate)
         lg.setColor(1, 1, 1, 1)
         lg.circle('line',
             POP_STRENGTH_UI_X_REL,
@@ -82,11 +76,11 @@ function PlayerUiComponent:draw(context)
 
         -- angle ui
         --------------------------------------------------------------
-        lg.rotate(self.pop_angle)
-        lg.setColor(self.color)
+        lg.rotate(self.player.pop_angle)
+        lg.setColor(self.color.color_table)
         lg.polygon('fill', POP_ANGLE_UI_POINTS)
-        lg.setColor(1, 1, 1, 1)
-        lg.polygon('line', POP_ANGLE_UI_POINTS)
+        -- lg.setColor(1, 1, 1, 1)
+        -- lg.polygon('line', POP_ANGLE_UI_POINTS)
 
         lg.setLineWidth(default_line_width)
     end
@@ -96,15 +90,17 @@ end
 
 ---@param context Context
 function PlayerUiComponent:onAdd(context)
-    local color = context:get('color') --[[@as ColorComponent]]
-    if color then
-        self.color = color.color_table
-    end
+    self.color    = context:get('color')
+    self.player   = context:get('player')
+    self.position = context:get('position')
 
-    local player = context:get('player') --[[@as PlayerComponent]]
-    if player then
-        self.player = player
-    end
+    -- track self position smoothly
+    --------------------------------------------------------------
+    self.sod = SecondOrderDynamics(
+        SOC_F, SOC_Z, SOC_R,
+        Vector(self.position.x, self.position.y))
+
+    self.x, self.y = self.position.x, self.position.y
 end
 
 
@@ -114,10 +110,16 @@ end
 
 
 ---@return Component
-function PlayerUiComponent.new()
-    local obj = Component.new()
+function PlayerUiComponent.new(name)
+    local obj = Component.new(name)
 
-    obj.color = { 1, 1, 1, 1 }
+    obj.color    = nil
+    obj.player   = nil
+    obj.position = nil
+    obj.sod      = nil
+
+    obj.x = 0
+    obj.y = 0
 
     local mt = getmetatable(obj)
     mt.__index = PlayerUiComponent

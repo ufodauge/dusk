@@ -79,7 +79,7 @@ end
 function LLDebug:draw()
     -- Activated Guard
     --------------------------------------------------------------
-    if not self.active then
+    if not self.active or not self.debug_menu.display then
         return
     end
 
@@ -115,6 +115,12 @@ end
 
 
 ---comment
+function LLDebug:clearLog()
+    self.message_area:clear()
+end
+
+
+---comment
 ---@param name    string
 ---@param default boolean?
 function LLDebug:addFlag(name, default)
@@ -123,7 +129,6 @@ function LLDebug:addFlag(name, default)
         self.flags[name] = not self.flags[name]
     end)
 end
-
 
 ---comment
 ---@param name string
@@ -169,6 +174,7 @@ function LLDebug.new()
     -- Debug Menu
     --------------------------------------------------------------
     obj.debug_menu = DebugMenu:getInstance() --[[@as DebugMenu]]
+    obj.debug_menu:setMainInstance(obj)
 
 
     -- Debug Graph
@@ -176,23 +182,23 @@ function LLDebug.new()
     obj.graph_mem        = PeformenceGraph:new('mem')
     obj.graph_mem.width  = 160
     obj.graph_mem.height = 40
-    obj.graph_mem.x      = 0
+    obj.graph_mem.x      = lg.getWidth() - obj.graph_mem.width
     obj.graph_mem.y      = lg.getHeight() - obj.graph_mem.height * 2
     obj.graph_mem.font   = font_debug
 
     obj.graph_fps        = PeformenceGraph:new('fps')
     obj.graph_fps.width  = 160
     obj.graph_fps.height = 40
-    obj.graph_fps.x      = 0
+    obj.graph_fps.x      = lg.getWidth() - obj.graph_fps.width
     obj.graph_fps.y      = lg.getHeight() - obj.graph_fps.height
     obj.graph_fps.font   = font_debug
 
     ---@diagnostic disable-next-line: unused-local
     obj.director:register('resize', function(width, height)
-        obj.graph_mem.x = 0
+        obj.graph_mem.x = lg.getWidth() - obj.graph_mem.width
         obj.graph_mem.y = height - obj.graph_mem.height * 2
 
-        obj.graph_fps.x = 0
+        obj.graph_fps.x = lg.getWidth() - obj.graph_fps.width
         obj.graph_fps.y = height - obj.graph_fps.height
     end)
 
@@ -208,12 +214,12 @@ function LLDebug.new()
     -- Display area for debug message
     --------------------------------------------------------------
     obj.message_area = MessageArea.new() --[[@as MessageArea]]
-    obj.message_area.w = 300
-    obj.message_area.h = 120
-    obj.message_area.x = lg.getWidth() - obj.message_area.w
+    obj.message_area.w = 450
+    obj.message_area.h = 500
+    obj.message_area.x = 0
     obj.message_area.y = lg.getHeight() - obj.message_area.h
 
-    ---@diagnostic disable-next-line: unused-local
+
     obj.director:register('resize', function(width, height)
         obj.message_area.x = width - obj.message_area.w
         obj.message_area.y = height - obj.message_area.h
