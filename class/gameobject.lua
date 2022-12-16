@@ -1,4 +1,5 @@
 ---@class GameObject
+---@field dead      boolean
 ---@field components Context
 local GameObject = {}
 
@@ -42,7 +43,7 @@ function GameObject.new()
     ---@class Context
     obj.components = {}
 
-    
+
     ---@param comp_name string
     ---@return unknown
     function obj.components:get(comp_name)
@@ -52,6 +53,11 @@ function GameObject.new()
             end
         end
         return nil
+    end
+
+
+    function obj.components:deleteGameObject()
+        obj.dead = true
     end
 
 

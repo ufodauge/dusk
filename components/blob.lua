@@ -81,8 +81,10 @@ end
 function BlobComponent:createPhysicsObject(world)
     self.blob = Blob.new(
         world,
-        self.position.x, self.position.y,
-        self.radius.r - NODE_RADIUS * 2, NODE_RADIUS)
+        self.position.x,
+        self.position.y,
+        self.radius.r - NODE_RADIUS,
+        NODE_RADIUS)
 
     if self.fixed then
         self.blob:fixPosition()
@@ -101,7 +103,7 @@ function BlobComponent.new(name, fixed)
 
     obj.blob = nil
 
-    obj.fixed    = fixed or false
+    obj.fixed = fixed or false
 
     local mt = getmetatable(obj)
     mt.__index = BlobComponent

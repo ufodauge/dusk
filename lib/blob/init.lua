@@ -21,9 +21,11 @@ local NODE_RADIUS = 8
 ---@class Blob
 ---@field kernel_body love.Body
 ---@field kernel_fixture love.Fixture
----@field nodes {body: love.Body, fixture: love.Fixture, joint_to_kernel: love.Joint, joint_to_node: love.Joint}
+---@field nodes {body: love.Body, fixture: love.Fixture, joint_to_kernel: love.Joint, joint_to_node: love.Joint}[]
 ---@field outer_points number[]
 ---@field line_width number
+---@field radius number
+---@field node_radius number
 local Blob = {}
 
 
@@ -40,7 +42,7 @@ function Blob:update()
         table.insert(outer_points, y)
     end
 
-    self.outer_points = outer_points -- TODO: improve to splite curve
+    self.outer_points = outer_points -- TODO: improve to splice curve
     -- self.outer_points = lm.newBezierCurve(outer_points):render()
 end
 
@@ -53,13 +55,13 @@ function Blob:drawDebug()
             'line',
             node.body:getX(),
             node.body:getY(),
-            NODE_RADIUS)
+            self.node_radius)
     end
     lg.circle(
         'line',
         self.kernel_body:getX(),
         self.kernel_body:getY(),
-        NODE_RADIUS)
+        self.radius)
     lg.setColor(clr)
 end
 
@@ -105,10 +107,8 @@ end
 ---@param y number
 ---@param r number radius
 ---@param nr number? node radius
----@param lw number? line width
-function Blob.new(world, x, y, r, nr, lw)
+function Blob.new(world, x, y, r, nr)
     nr = nr or NODE_RADIUS
-    lw = lw or 1
 
     local obj = {}
 
@@ -167,7 +167,9 @@ function Blob.new(world, x, y, r, nr, lw)
         obj.outer_points[i] = 0
     end
 
-    obj.line_width = lw or 1
+    obj.line_width  = 1
+    obj.node_radius = nr
+    obj.radius      = r / 4
 
     return setmetatable(obj, { __index = Blob })
 end

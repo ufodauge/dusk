@@ -1,16 +1,16 @@
 local PATH = (...):gsub('[^/.\\]+$', '')
 local Entry = require(PATH .. 'entry')
 
----@class Executable
+---@class Executable : Entry
 ---@field name string
 ---@field func function
 local Executable = setmetatable({}, { __index = Entry })
 
 
 ---comment
----@return unknown
+---@return any
 function Executable:execute()
-    return self.func()
+    return self.func() or true
 end
 
 

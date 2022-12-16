@@ -33,7 +33,7 @@ end
 function CircleComponent:onAdd(context)
     self.color    = context:get('color')
     self.position = context:get('position')
-    self.radius     = context:get('radius')
+    self.radius   = context:get('radius')
 end
 
 
@@ -49,7 +49,7 @@ function CircleComponent.new(name)
 
     obj.color    = nil
     obj.position = nil
-    obj.radius     = nil
+    obj.radius   = nil
 
     local mt = getmetatable(obj)
     mt.__index = CircleComponent

@@ -2,8 +2,9 @@
 -- Const
 --------------------------------------------------------------
 local DEBUG_MENU_DIR_NAME_TOGGLE    = 'toggle'
-local DEBUG_MENU_DIR_NAME_CLEAR_LOG = 'clear'
+local DEBUG_MENU_DIR_NAME_CLEAR_LOG = 'clear log'
 local DEBUG_MENU_DIR_NAME_SCENE     = 'scene'
+local DEBUG_MENU_DIR_NAME_COMMANDS  = 'commands'
 
 
 --------------------------------------------------------------
@@ -147,6 +148,55 @@ function DebugMenu:removeToggler(name)
 end
 
 
+---@param name string
+---@param func function
+---@return boolean
+function DebugMenu:addCommand(name, func)
+    local commandDir = self.entry_manager
+        :getRootDir()
+        :getEntry(DEBUG_MENU_DIR_NAME_COMMANDS)
+
+    if commandDir == nil or commandDir:getEntry(name) then
+        return false
+    end
+    commandDir:add(Executable.new(name, func))
+
+    return true
+end
+
+
+---@param name string
+---@return boolean
+function DebugMenu:removeCommand(name)
+    local commandDir = self.entry_manager
+        :getRootDir()
+        :getEntry(DEBUG_MENU_DIR_NAME_COMMANDS)
+
+    if commandDir == nil or not commandDir:getEntry(name) then
+        return false
+    end
+    commandDir:removeEntry(name)
+
+    return true
+end
+
+
+-- ---@param name string
+-- ---@return boolean
+-- function DebugMenu:hideCommand(name)
+--     local commandDir = self.entry_manager
+--         :getRootDir()
+--         :getEntry(DEBUG_MENU_DIR_NAME_COMMANDS)
+
+--     if commandDir == nil or not commandDir:getEntry(name) then
+--         return false
+--     end
+--     commandDir:removeEntry(name)
+
+--     return true
+-- end
+
+
 function DebugMenu:setRoomy(instance)
     self.roomy = instance
 end
@@ -240,7 +290,7 @@ function DebugMenu.new(x, y)
     -- Entry Manager
     --------------------------------------------------------------
     obj.entry_manager = EntryManager.new() -- contains root directory
-    local rootDir = obj.entry_manager:getRootDir()
+    local rootDir = obj.entry_manager:getRootDir() --[[@as Directory]]
 
     -- Togglers
     rootDir:add(Directory.new(DEBUG_MENU_DIR_NAME_TOGGLE))
@@ -248,10 +298,16 @@ function DebugMenu.new(x, y)
     -- States
     rootDir:add(Directory.new(DEBUG_MENU_DIR_NAME_SCENE))
 
+    -- commands
+    rootDir:add(Directory.new(DEBUG_MENU_DIR_NAME_COMMANDS))
+    local commandDir = rootDir:getEntry(DEBUG_MENU_DIR_NAME_COMMANDS)
+
     -- clear log
-    rootDir:add(Executable.new(DEBUG_MENU_DIR_NAME_CLEAR_LOG, function()
-        obj.luidebug:clearLog()
-    end))
+    if commandDir then
+        commandDir:add(Executable.new(DEBUG_MENU_DIR_NAME_CLEAR_LOG, function()
+            obj.luidebug:clearLog()
+        end))
+    end
 
     -- Quit
     rootDir:add(Executable.new('quit', function()

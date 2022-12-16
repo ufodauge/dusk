@@ -42,7 +42,7 @@ return {
         { 'position', 160, 450 },
         { 'radius', 26 },
         { 'color', { hex2tbl(pink['500']) } },
-        { 'blob', false },
+        { 'blob' },
         { 'shadow_body' },
         { 'player', },
         { 'player_ui', },
@@ -61,5 +61,12 @@ return {
         { 'radius', 1200 },
         { 'color', { hex2tbl('#FDFDFB') } },
         { 'lighting' }
+    },
+    {
+        hud = true,
+        { 'position', 1100, 30 },
+        { 'color', { hex2tbl('#121212') } },
+        { 'text', '%02d:%02d.%02d', 'timeburnerbold', 20 },
+        { 'timer' }
     },
 }

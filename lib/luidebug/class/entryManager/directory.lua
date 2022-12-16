@@ -1,22 +1,21 @@
 local PATH = (...):gsub('[^/.\\]+$', '')
 local Entry = require(PATH .. 'entry')
 
----@class Directory
----@field entries Entry[]
+---@class Directory : Entry
+---@field entries (Directory|Executable)[]
 local Directory = setmetatable({}, { __index = Entry })
 
 
----comment
+
 ---@param index integer
----@return Entry
+---@return Directory|Executable
 function Directory:getEntryByIndex(index)
     return self.entries[index]
 end
 
 
----comment
 ---@param name string
----@return Entry|nil
+---@return Directory|Executable|nil
 function Directory:getEntry(name)
     for _, entry in ipairs(self.entries) do
         if entry.name == name then
@@ -41,22 +40,19 @@ function Directory:getEntryIndex(name)
 end
 
 
----comment
 ---@return integer
 function Directory:getItemCount()
     return #self.entries
 end
 
 
----comment
----@param entry Entry|Executable|Directory
+---@param entry Executable|Directory
 function Directory:add(entry)
     entry.parent = self
     table.insert(self.entries, entry)
 end
 
 
----comment
 function Directory:remove()
     for i = #self.entries, 1, -1 do
         self.entries[i]:remove()
@@ -71,7 +67,6 @@ function Directory:clearContents()
 end
 
 
----comment
 ---@param name string
 ---@return boolean
 function Directory:removeEntry(name)
@@ -88,13 +83,12 @@ end
 
 
 ---factory for loop process
----@return Entry[]
+---@return (Directory|Executable)[]
 function Directory:getEntries()
     return self.entries
 end
 
 
----comment
 ---@param name string
 ---@return Directory
 function Directory.new(name)

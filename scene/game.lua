@@ -1,3 +1,6 @@
+--[[
+TODO: メインスレッド止めるな委員会
+]]
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
@@ -11,24 +14,20 @@ local lg = love.graphics
 --------------------------------------------------------------
 local WORLD_GRAVITY_X = 0
 local WORLD_GRAVITY_Y = 512
-local CATEGORY = require('data.box2d_category')
+local CATEGORY        = require('data.box2d_category')
 
 
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug    = require('lib.luidebug'):getInstance()
-local Roomy       = require('lib.roomy'):getInstance()
-local GameObject  = require('class.gameobject')
-local lume        = require('lib.lume')
-local LightWorld  = require('lib.lightworld.lib')
-local ResultScene = require('scene.result')
-
-
---------------------------------------------------------------
--- Components
---------------------------------------------------------------
-local Components = require('lib.cargo').init('components')
+local LuiDebug        = require('lib.luidebug'):getInstance()
+local Roomy           = require('lib.roomy'):getInstance()
+local ComponentLoader = require('class.component_loader')
+local lume            = require('lib.lume')
+local LightWorld      = require('lib.lightworld.lib')
+local Signal          = require('lib.signal')
+local ResultScene     = require('scene.result')
+local Signal          = require('lib.signal')
 
 
 ---@class GameScene : Scene
@@ -36,6 +35,7 @@ local GameScene = {}
 
 local current_level = 0 ---@type integer
 local instances     = {} ---@type GameObject[]
+local instances_hud = {} ---@type GameObject[]
 local world         = nil ---@type love.World
 local light_world   = nil
 
@@ -47,75 +47,35 @@ function GameScene:enter(prev, level)
     --------------------------------------------------------------
     current_level = level or 1
 
-    local chunk, errmsg = lf.load(('data/level/%d.lua'):format(current_level))
-    --[[
-        TODO: make it safely
-    ]]
-    if errmsg then
-        error(errmsg)
-    end
-    local components_data = chunk()
-
-
-    --[[
-        TODO: ゲームオブジェクト化
-        そもそもすべきか？
-    ]]
     -- physics world
     --------------------------------------------------------------
     world = lp.newWorld()
     world:setGravity(WORLD_GRAVITY_X, WORLD_GRAVITY_Y)
 
-
-    --[[
-        TODO: ゲームオブジェクト化
-        draw 関数全体をラップする必要があるができるのか？？？
-        多分しなくていい気がするけどどうでしょう
-    ]]
     -- light world
     --------------------------------------------------------------
     light_world = LightWorld({
          ambient = { 0.8, 0.8, 0.8 }
     })
-    light_world.post_shader:addEffect('tilt_shift')
+    -- light_world.post_shader:addEffect('tilt_shift')
 
 
-    --create objects
-    --------------------------------------------------------------
-    for _, data in ipairs(components_data) do
+    local loader = ComponentLoader.new(('data/level/%d.lua'):format(current_level))
 
-        -- object
-        local game_object = GameObject.new()
+    loader:setRelationToSceneBasedObject(
+        world,
+        'createPhysicsObject')
+    loader:setRelationToSceneBasedObject(
+        light_world,
+        'setLightWorld')
 
-        -- add components
-        --------------------------------------------------------------
-        for _, comp_data in ipairs(data) do
+    instances     = loader:getInstances()
+    instances_hud = loader:getHUDInstances()
 
-            local comp_name = comp_data[1]
 
-            if Components[comp_name] then
-                -- create component
-                --------------------------------------------------------------
-                local comp = Components[comp_name].new(unpack(comp_data))
-                game_object:addComponent(comp, comp_name)
-
-                -- relate scene-based objects
-                --------------------------------------------------------------
-                if comp.createPhysicsObject then
-                    comp:createPhysicsObject(world)
-                end
-
-                if comp.setLightWorld then
-                    comp:setLightWorld(light_world)
-                end
-            else
-
-                LuiDebug:log('Component: ' .. comp_name .. ' has not been found.')
-            end
-        end
-
-        instances[#instances + 1] = game_object
-    end
+    LuiDebug.debug_menu:addCommand('goal', function()
+        Signal.send('goaled')
+    end)
 end
 
 
@@ -128,8 +88,19 @@ function GameScene:update(dt)
     world:update(dt)
     light_world:update(dt)
 
-    for _, instance in ipairs(instances) do
-        instance:update(dt)
+    for i = #instances, 1, -1 do
+        instances[i]:update(dt)
+        if instances[i].dead then
+            instances[i]:delete()
+            table.remove(instances, i)
+        end
+    end
+    for i = #instances_hud, 1, -1 do
+        instances_hud[i]:update(dt)
+        if instances_hud[i].dead then
+            instances_hud[i]:delete()
+            table.remove(instances_hud, i)
+        end
     end
 end
 
@@ -143,6 +114,11 @@ function GameScene:draw()
             end
         end
     end)
+    for _, instance in ipairs(instances_hud) do
+        if instance then
+            instance:draw()
+        end
+    end
 end
 
 
@@ -159,15 +135,26 @@ function GameScene:leave(next)
         end
         instances[i] = nil
     end
+    for i = #instances_hud, 1, -1 do
+        if instances_hud[i].delete then
+            instances_hud[i]:delete()
+        end
+        instances_hud[i] = nil
+    end
     world:destroy()
+    LuiDebug.debug_menu:removeCommand('goal')
 end
 
 
 -- events
 --------------------------------------------------------------
-function GameScene:goaled(...)
-    Roomy:push(ResultScene)
-end
+-- Signal.subscribe('goaled', function()
+--     light_world.post_shader:addEffect('blur', 10.0, 10.0)
+
+
+
+--     Roomy:push(ResultScene)
+-- end)
 
 
 return GameScene

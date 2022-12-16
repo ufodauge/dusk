@@ -9,6 +9,7 @@ local lg = love.graphics
 -- require
 --------------------------------------------------------------
 local Baton    = require('lib.baton')
+local Signal   = require('lib.signal')
 local LuiDebug = require('lib.luidebug'):getInstance()
 
 
@@ -27,12 +28,17 @@ local Component = require('class.component')
 ---@field pop_angle         number
 ---@field pop_strength_rate number
 ---@field baton             any
+---@field controllable      boolean
 local PlayerComponent = setmetatable({}, { __index = Component })
 
 ---comment
 ---@param dt number
 ---@param context Context
 function PlayerComponent:update(dt, context)
+    if not self.controllable then
+        return
+    end
+
     -- controlls
     --------------------------------------------------------------
     self.baton:update()
@@ -116,6 +122,13 @@ function PlayerComponent.new(name)
     --------------------------------------------------------------
     obj.pop_angle         = -math.pi / 2
     obj.pop_strength_rate = 0
+
+
+    obj.controllable = true
+
+    Signal.subscribe('goaled', function()
+        obj.controllable = false
+    end)
 
     local mt = getmetatable(obj)
     mt.__index = PlayerComponent

@@ -1,7 +1,7 @@
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local Roomy = require('lib.roomy'):getInstance()
+local Signal = require('lib.signal')
 
 
 --------------------------------------------------------------
@@ -42,8 +42,10 @@ function GoalComponent:update(dt, context)
         local cat_b = fix_b:getCategory()
 
         if cat_a == CATEGORY.PLAYER and cat_b == CATEGORY.GOAL then
-            Roomy:emit('goaled')
+            Signal.send('goaled')
             self.goaled = true
+
+            break
         end
     end
 end
