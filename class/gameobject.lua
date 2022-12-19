@@ -1,5 +1,6 @@
 ---@class GameObject
 ---@field dead      boolean
+---@field id        string
 ---@field components Context
 local GameObject = {}
 
@@ -9,6 +10,18 @@ function GameObject:addComponent(component, name)
     component.name = name
     table.insert(self.components, component)
     component:onAdd(self.components)
+end
+
+
+---@param name string
+---@return Component|nil
+function GameObject:getComponentByName(name)
+    for _, component in ipairs(self.components) do
+        if component.name == name then
+            return component
+        end
+    end
+    return nil
 end
 
 
@@ -59,6 +72,10 @@ function GameObject.new()
     function obj.components:deleteGameObject()
         obj.dead = true
     end
+
+
+    obj.dead = false
+    obj.id = '_'
 
 
     return setmetatable(obj, { __index = GameObject })

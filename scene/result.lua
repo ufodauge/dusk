@@ -9,9 +9,10 @@ local lg = love.graphics
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug        = require('lib.luidebug'):getInstance()
-local Roomy           = require('lib.roomy'):getInstance()
-local ComponentLoader = require('class.component_loader')
+local LuiDebug          = require('lib.luidebug'):getInstance()
+local Roomy             = require('lib.roomy'):getInstance()
+local ComponentLoader   = require('class.component_loader')
+local GameObjectManager = require('class.gameobject_manager')
 
 
 --------------------------------------------------------------
@@ -25,7 +26,7 @@ local ResultScene = {}
 
 ---@type GameScene
 local GameScene = nil
-local instances = {} ---@type GameObject[]
+local manager   = {} ---@type GameObjectManager
 
 function ResultScene:enter(prev, time)
     GameScene = prev
@@ -33,27 +34,20 @@ function ResultScene:enter(prev, time)
     local loader = ComponentLoader.new('data/result_layout.lua')
     loader:setRelationToSceneBasedObject(time, 'setTime')
 
-    instances = loader:getInstances()
+    manager = GameObjectManager.new(
+        loader:getInstances())
 end
 
 
 function ResultScene:update(dt)
     GameScene:update(dt / 4)
-
-    for _, instance in ipairs(instances) do
-        instance:update(dt)
-    end
+    manager:update(dt)
 end
 
 
 function ResultScene:draw()
     GameScene:draw()
-
-    for _, instance in ipairs(instances) do
-        if instance then
-            instance:draw()
-        end
-    end
+    manager:draw()
 end
 
 

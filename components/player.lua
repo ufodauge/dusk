@@ -8,17 +8,17 @@ local lg = love.graphics
 --------------------------------------------------------------
 -- require
 --------------------------------------------------------------
-local Baton    = require('lib.baton')
-local Signal   = require('lib.signal')
-local LuiDebug = require('lib.luidebug'):getInstance()
+local Signal     = require('lib.signal')
+local LuiDebug   = require('lib.luidebug'):getInstance()
+local Controller = require('class.controller'):getInstance()
 
 
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
 local POP_STRENGTH = 185
-local CATEGORY = require('data.box2d_category')
-
+local CATEGORY     = require('data.box2d_category')
+local EVENT_NAME   = require('data.event_name')
 
 local Component = require('class.component')
 
@@ -27,8 +27,8 @@ local Component = require('class.component')
 ---@field blob              BlobComponent
 ---@field pop_angle         number
 ---@field pop_strength_rate number
----@field baton             any
 ---@field controllable      boolean
+---@field _send_goal_time   function
 local PlayerComponent = setmetatable({}, { __index = Component })
 
 ---comment
@@ -39,22 +39,18 @@ function PlayerComponent:update(dt, context)
         return
     end
 
-    -- controlls
-    --------------------------------------------------------------
-    self.baton:update()
-
 
     -- angle controlls
     --------------------------------------------------------------
-    local axis_x, axis_y = self.baton:get('move')
+    local axis_x, axis_y = Controller:get('move')
     if axis_x == 0 and axis_y == 0 then
 
         -- tilt angle
         --------------------------------------------------------------
-        if self.baton:down('tilt_left') then
+        if Controller:down('tilt_left') then
             self.pop_angle = self.pop_angle - math.pi / 128
         end
-        if self.baton:down('tilt_right') then
+        if Controller:down('tilt_right') then
             self.pop_angle = self.pop_angle + math.pi / 128
         end
 
@@ -69,14 +65,14 @@ function PlayerComponent:update(dt, context)
 
     -- jump controlls
     --------------------------------------------------------------
-    if self.baton:released('action') then
+    if Controller:released('action') then
         self.blob:applyLinearImpulse(
             POP_STRENGTH * math.cos(self.pop_angle) * self.pop_strength_rate,
             POP_STRENGTH * math.sin(self.pop_angle) * self.pop_strength_rate)
     end
 
 
-    if self.baton:down('action') then
+    if Controller:down('action') then
         self.pop_strength_rate = self.pop_strength_rate + dt
         if self.pop_strength_rate > 1 then
             local remainder = self.pop_strength_rate % 1
@@ -100,6 +96,7 @@ end
 
 
 function PlayerComponent:delete()
+    Signal.unsubscribe(EVENT_NAME.GOALED, self._send_goal_time)
 end
 
 
@@ -110,14 +107,6 @@ function PlayerComponent.new(name)
     obj.position = nil
     obj.blob     = nil
 
-    -- load keyconfig
-    --[[
-        TODO: the codes below is only to lode default config
-    ]]
-    --------------------------------------------------------------
-    local config = lf.load('data/key_config.lua')()
-    obj.baton = Baton.new(config)
-
     -- indicator status
     --------------------------------------------------------------
     obj.pop_angle         = -math.pi / 2
@@ -126,9 +115,10 @@ function PlayerComponent.new(name)
 
     obj.controllable = true
 
-    Signal.subscribe('goaled', function()
+    obj._send_goal_time = function()
         obj.controllable = false
-    end)
+    end
+    Signal.subscribe(EVENT_NAME.GOALED, obj._send_goal_time)
 
     local mt = getmetatable(obj)
     mt.__index = PlayerComponent

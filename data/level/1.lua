@@ -1,7 +1,6 @@
 local hex2tbl = require('lib.lume').color
-local pink = require('data.color_palette').pink
-local indigo = require('data.color_palette').indigo
-local CATEGORY = require('data.box2d_category')
+local pink    = require('data.color_palette').pink
+local indigo  = require('data.color_palette').indigo
 
 return {
     {
@@ -63,7 +62,8 @@ return {
         { 'lighting' }
     },
     {
-        hud = true,
+        _id = 'timer',
+        _tag = 'hud',
         { 'position', 1100, 30 },
         { 'color', { hex2tbl('#121212') } },
         { 'text', '%02d:%02d.%02d', 'timeburnerbold', 20 },

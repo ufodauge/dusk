@@ -1,4 +1,10 @@
 --------------------------------------------------------------
+-- constants
+--------------------------------------------------------------
+local TAG_DEFAULT = 'default'
+
+
+--------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
 local LuiDebug   = require('lib.luidebug'):getInstance()
@@ -21,8 +27,7 @@ local lf = love.filesystem
 ---@field scene_based_objects table<string, any>
 ---@field components_data     table[]
 ---@field loaded              boolean
----@field instances           GameObject[]
----@field instances_hud       GameObject[]
+---@field instances           table<string, GameObject[]>
 local ComponentLoader = {}
 
 function ComponentLoader:setRelationToSceneBasedObject(object, funcname)
@@ -41,6 +46,8 @@ function ComponentLoader:_load()
 
         -- object
         local game_object = GameObject.new()
+        local tag = data._tag or TAG_DEFAULT
+        game_object.id = data._id or '_'
 
         -- add components
         --------------------------------------------------------------
@@ -71,26 +78,24 @@ function ComponentLoader:_load()
             end
         end
 
-        if data.hud then
-            self.instances_hud[#self.instances_hud + 1] = game_object
-        else
-            self.instances[#self.instances + 1] = game_object
-        end
+        self.instances[tag] = self.instances[tag] or {}
+        self.instances[tag][#self.instances[tag] + 1] = game_object
+
     end
 
     self.loaded = true
 end
 
 
-function ComponentLoader:getInstances()
+---@param tag? string
+---@return GameObject[]
+function ComponentLoader:getInstances(tag)
     self:_load()
-    return self.instances
-end
-
-
-function ComponentLoader:getHUDInstances()
-    self:_load()
-    return self.instances_hud
+    tag = tag or TAG_DEFAULT
+    if self.instances[tag] then
+        return self.instances[tag]
+    end
+    return {}
 end
 
 
@@ -100,7 +105,6 @@ function ComponentLoader.new(filepath)
 
     obj.scene_based_objects = {}
     obj.instances           = {}
-    obj.instances_hud       = {}
     obj.loaded              = false
 
     local chunk, errmsg = lf.load(filepath)

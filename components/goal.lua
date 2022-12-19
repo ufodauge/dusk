@@ -7,7 +7,8 @@ local Signal = require('lib.signal')
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local CATEGORY = require('data.box2d_category')
+local CATEGORY   = require('data.box2d_category')
+local EVENT_NAME = require('data.event_name')
 
 
 --------------------------------------------------------------
@@ -29,7 +30,10 @@ local GoalComponent = setmetatable({}, { __index = Component })
 ---@param dt number
 ---@param context Context
 function GoalComponent:update(dt, context)
-    if self.goaled or self.world:getContactCount() == 0 then
+    if self.goaled then
+        return
+    end
+    if self.world:getContactCount() == 0 then
         return
     end
 
@@ -42,9 +46,8 @@ function GoalComponent:update(dt, context)
         local cat_b = fix_b:getCategory()
 
         if cat_a == CATEGORY.PLAYER and cat_b == CATEGORY.GOAL then
-            Signal.send('goaled')
+            Signal.send(EVENT_NAME.GOALED)
             self.goaled = true
-
             break
         end
     end

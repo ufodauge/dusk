@@ -1,9 +1,10 @@
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug = require('lib.luidebug')
-local Roomy    = require('lib.roomy'):getInstance()
-local Signal   = require('lib.signal')
+local LuiDebug   = require('lib.luidebug')
+local Roomy      = require('lib.roomy'):getInstance()
+local Signal     = require('lib.signal')
+local EVENT_NAME = require('data.event_name')
 
 
 --------------------------------------------------------------
@@ -68,15 +69,17 @@ function TimerComponent:onAdd(context)
     self.position = context:get('position')
     self.rotation = context:get('rotation')
 
-    Signal.subscribe('goaled', function()
+    self._signal = function()
         self.working = false
         self.hide    = true
-    end)
+        Signal.send(EVENT_NAME.SEND_GOAL_TIME, self.time)
+    end
+    Signal.subscribe(EVENT_NAME.GOALED, self._signal)
 end
 
 
 function TimerComponent:delete()
-
+    Signal.unsubscribe(EVENT_NAME.GOALED, self._signal)
 end
 
 
@@ -97,6 +100,8 @@ function TimerComponent.new(name)
     obj.minute  = 0
     obj.second  = 0
     obj.milisec = 0
+
+    obj._signal = function() end
 
     local mt = getmetatable(obj)
     mt.__index = TimerComponent
