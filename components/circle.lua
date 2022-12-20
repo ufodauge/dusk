@@ -22,7 +22,7 @@ end
 
 ---@param context Context
 function CircleComponent:draw(context)
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     lg.circle('fill',
         self.position.x, self.position.y,
         self.radius.r)

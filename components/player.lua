@@ -11,12 +11,13 @@ local lg = love.graphics
 local Signal     = require('lib.signal')
 local LuiDebug   = require('lib.luidebug'):getInstance()
 local Controller = require('class.controller'):getInstance()
+local quadout    = require('lib.easing.quad').o
 
 
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local POP_STRENGTH = 185
+local POP_STRENGTH = 190
 local CATEGORY     = require('data.box2d_category')
 local EVENT_NAME   = require('data.event_name')
 
@@ -73,14 +74,11 @@ function PlayerComponent:update(dt, context)
 
 
     if Controller:down('action') then
-        self.pop_strength_rate = self.pop_strength_rate + dt
-        if self.pop_strength_rate > 1 then
-            local remainder = self.pop_strength_rate % 1
-            self.pop_strength_rate = self.pop_strength_rate - 1 + remainder
-        end
+        self._time = (self._time + dt) % 1
     else
-        self.pop_strength_rate = 0
+        self._time = 0
     end
+    self.pop_strength_rate = quadout(self._time)
 end
 
 
@@ -111,6 +109,7 @@ function PlayerComponent.new(name)
     --------------------------------------------------------------
     obj.pop_angle         = -math.pi / 2
     obj.pop_strength_rate = 0
+    obj._time             = 0
 
 
     obj.controllable = true

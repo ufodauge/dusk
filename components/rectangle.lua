@@ -22,7 +22,7 @@ end
 
 ---@param context Context
 function RectangleComponent:draw(context)
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     lg.rectangle('fill',
         self.position.x, self.position.y,
         self.size.w, self.size.h)

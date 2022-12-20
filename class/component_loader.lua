@@ -9,6 +9,7 @@ local TAG_DEFAULT = 'default'
 --------------------------------------------------------------
 local LuiDebug   = require('lib.luidebug'):getInstance()
 local GameObject = require('class.gameobject')
+local Flux       = require('lib.flux')
 
 
 --------------------------------------------------------------
@@ -46,36 +47,18 @@ function ComponentLoader:_load()
 
         -- object
         local game_object = GameObject.new()
+        local delay = data._delay
         local tag = data._tag or TAG_DEFAULT
         game_object.id = data._id or '_'
 
         -- add components
         --------------------------------------------------------------
-        for _, comp_data in ipairs(data) do
-
-            -- assume comp_data[1] is component name
-            --------------------------------------------------------------
-            local comp_name = comp_data[1]
-
-            if Components[comp_name] then
-                -- create component
-                --------------------------------------------------------------
-                local comp = Components[comp_name].new(unpack(comp_data))
-                game_object:addComponent(comp, comp_name)
-
-                -- relate scene-based objects
-                --------------------------------------------------------------
-                for funcname, object in pairs(self.scene_based_objects) do
-                    if comp[funcname] then
-                        comp[funcname](comp, object)
-                    end
-                end
-
-            else
-
-                LuiDebug:log('Component: ' .. comp_name .. ' has not been found.')
-
-            end
+        if delay then
+            Flux.to({}, delay, {}):oncomplete(function()
+                self:_addComponents(game_object, data)
+            end)
+        else
+            self:_addComponents(game_object, data)
         end
 
         self.instances[tag] = self.instances[tag] or {}
@@ -84,6 +67,36 @@ function ComponentLoader:_load()
     end
 
     self.loaded = true
+end
+
+
+function ComponentLoader:_addComponents(game_object, data)
+    for _, comp_data in ipairs(data) do
+
+        -- assume comp_data[1] is component name
+        --------------------------------------------------------------
+        local comp_name = comp_data[1]
+
+        if Components[comp_name] then
+            -- create component
+            --------------------------------------------------------------
+            local comp = Components[comp_name].new(unpack(comp_data))
+            game_object:addComponent(comp, comp_name)
+
+            -- relate scene-based objects
+            --------------------------------------------------------------
+            for funcname, object in pairs(self.scene_based_objects) do
+                if comp[funcname] then
+                    comp[funcname](comp, object)
+                end
+            end
+
+        else
+
+            LuiDebug:log('Component: ' .. comp_name .. ' has not been found.')
+
+        end
+    end
 end
 
 

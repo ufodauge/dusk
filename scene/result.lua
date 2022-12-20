@@ -52,6 +52,7 @@ end
 
 
 function ResultScene:leave(next, ...)
+    manager:delete()
 end
 
 

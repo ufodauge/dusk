@@ -27,7 +27,7 @@ function TemplateComponent:delete()
 end
 
 
----@return Component
+---@return TemplateComponent
 function TemplateComponent.new(name)
     local obj = Component.new(name)
 

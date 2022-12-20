@@ -63,7 +63,7 @@ function PlayerUiComponent:draw(context)
 
         -- strength ui
         --------------------------------------------------------------
-        lg.setColor(self.color.color_table)
+        self.color:setColor()
         lg.circle('fill',
             POP_STRENGTH_UI_X_REL,
             POP_STRENGTH_UI_Y_REL,
@@ -77,10 +77,8 @@ function PlayerUiComponent:draw(context)
         -- angle ui
         --------------------------------------------------------------
         lg.rotate(self.player.pop_angle)
-        lg.setColor(self.color.color_table)
+        self.color:setColor()
         lg.polygon('fill', POP_ANGLE_UI_POINTS)
-        -- lg.setColor(1, 1, 1, 1)
-        -- lg.polygon('line', POP_ANGLE_UI_POINTS)
 
         lg.setLineWidth(default_line_width)
     end

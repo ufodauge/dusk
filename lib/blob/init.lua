@@ -19,13 +19,14 @@ local NODE_RADIUS = 8
 
 
 ---@class Blob
----@field kernel_body love.Body
+---@field kernel_body    love.Body
 ---@field kernel_fixture love.Fixture
 ---@field nodes {body: love.Body, fixture: love.Fixture, joint_to_kernel: love.Joint, joint_to_node: love.Joint}[]
 ---@field outer_points number[]
----@field line_width number
----@field radius number
----@field node_radius number
+---@field line_width   number
+---@field radius       number
+---@field is_dissolved boolean
+---@field node_radius  number
 local Blob = {}
 
 
@@ -42,8 +43,7 @@ function Blob:update()
         table.insert(outer_points, y)
     end
 
-    self.outer_points = outer_points -- TODO: improve to splice curve
-    -- self.outer_points = lm.newBezierCurve(outer_points):render()
+    self.outer_points = outer_points
 end
 
 
@@ -86,8 +86,29 @@ function Blob:draw(style)
     local line_style = lg.getLineStyle()
     lg.setLineStyle('smooth')
     lg.setLineWidth(self.line_width)
-    lg.polygon(style, self.outer_points)
+    if self.is_dissolved then
+        for i = 1, #self.nodes do
+            local x, y = self.nodes[i].body:getPosition()
+            lg.circle(style, x, y, 10)
+        end
+        local x, y = self.kernel_body:getPosition()
+        lg.circle(style, x, y, 10)
+    else 
+        lg.polygon(style, self.outer_points)
+    end
     lg.setLineStyle(line_style)
+end
+
+
+function Blob:dissolve()
+    if self.is_dissolved then
+        return
+    end
+    self.is_dissolved = true
+    for i = 1, #self.nodes do
+        self.nodes[i].joint_to_kernel:destroy()
+        self.nodes[i].joint_to_node:destroy()
+    end
 end
 
 
@@ -140,15 +161,16 @@ function Blob.new(world, x, y, r, nr)
         node_joint:setFrequency(12 * (20 / r))
 
         table.insert(nodes, {
-            body    = node_body,
-            fixture = node_fixture,
+            body            = node_body,
+            fixture         = node_fixture,
+            joint_to_kernel = node_joint,
         })
     end
 
     for i = 1, #nodes do
         local j = (i % #nodes) + 1
-        -- discard
-        lp.newDistanceJoint(
+
+        local joint = lp.newDistanceJoint(
             nodes[i].body,
             nodes[j].body,
             nodes[i].body:getX(),
@@ -156,6 +178,7 @@ function Blob.new(world, x, y, r, nr)
             nodes[j].body:getX(),
             nodes[j].body:getY(),
             false)
+        nodes[i].joint_to_node = joint
     end
 
     obj.kernel_body = kernel_body
@@ -167,9 +190,10 @@ function Blob.new(world, x, y, r, nr)
         obj.outer_points[i] = 0
     end
 
-    obj.line_width  = 1
-    obj.node_radius = nr
-    obj.radius      = r / 4
+    obj.line_width   = 1
+    obj.node_radius  = nr
+    obj.radius       = r / 4
+    obj.is_dissolved = false
 
     return setmetatable(obj, { __index = Blob })
 end

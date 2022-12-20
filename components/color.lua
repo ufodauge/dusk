@@ -1,3 +1,9 @@
+--------------------------------------------------------------
+-- shorthands
+--------------------------------------------------------------
+local lg = love.graphics
+
+
 ---@class RGBA
 ---@field [1] number
 ---@field [2] number
@@ -8,7 +14,10 @@
 local Component = require('class.component')
 
 ---@class ColorComponent : Component
----@field color_table RGBA
+---@field r           number
+---@field g           number
+---@field b           number
+---@field a           number
 local ColorComponent = setmetatable({}, { __index = Component })
 
 ---@param dt number
@@ -30,6 +39,11 @@ function ColorComponent:onAdd(context)
 end
 
 
+function ColorComponent:setColor()
+    lg.setColor(self.r, self.g, self.b, self.a)
+end
+
+
 function ColorComponent:delete()
 
 end
@@ -40,7 +54,10 @@ end
 function ColorComponent.new(name, color_table)
     local obj = Component.new(name)
 
-    obj.color_table = color_table
+    obj.r = color_table[1]
+    obj.g = color_table[2]
+    obj.b = color_table[3]
+    obj.a = color_table[4]
 
     local mt = getmetatable(obj)
     mt.__index = ColorComponent

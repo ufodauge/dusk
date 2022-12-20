@@ -22,6 +22,11 @@ local Component = require('class.component')
 local BlockComponent = setmetatable({}, { __index = Component })
 
 
+function BlockComponent:update(dt, context)
+    -- self.body:setPosition(self.position.x, self.position.y)
+end
+
+
 ---@param world love.World
 function BlockComponent:createPhysicsObject(world)
     local body    = lp.newBody(

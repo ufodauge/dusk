@@ -27,7 +27,7 @@ end
 
 ---@param context Context
 function VariableControllerUIComponent:draw(context)
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     lg.setFont(self.text.font)
     lg.print(self._generated_text, self.position.x, self.position.y)
 end

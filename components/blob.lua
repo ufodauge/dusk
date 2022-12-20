@@ -40,7 +40,7 @@ end
 
 ---@param context Context
 function BlobComponent:draw(context)
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     self.blob:draw()
 
     if LuiDebug:getFlag(PHYSICS_POLYGONS) then

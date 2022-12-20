@@ -13,6 +13,7 @@ local LightingComponent = setmetatable({}, { __index = Component })
 ---@param context Context
 function LightingComponent:update(dt, context)
     self.light:setPosition(self.position.x, self.position.y)
+    self.light:setColor(self.color.r, self.color.g, self.color.b)
 end
 
 
@@ -33,9 +34,7 @@ function LightingComponent:setLightWorld(world)
     self.world = world
     self.light = world:newLight(
         self.position.x, self.position.y,
-        self.color.color_table[1],
-        self.color.color_table[2],
-        self.color.color_table[3],
+        self.color.r, self.color.g, self.color.b,
         self.radius.r * self.mul)
 end
 

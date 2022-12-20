@@ -74,10 +74,6 @@ end
 
 ---@param context Context
 function BubbleFactoryComponent:draw(context)
-    -- lg.setColor(1, 1, 1, 1)
-    -- for i = 1, #self.bubbles do
-    --     self.bubbles[i]:draw()
-    -- end
 end
 
 

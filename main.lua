@@ -18,8 +18,9 @@ local lg = love.graphics
 -- requires
 --------------------------------------------------------------
 local Controller = require('class.controller'):getInstance()
-local Roomy = require('lib.roomy'):getInstance()
-love.assets = require('lib.cargo').init({
+local Roomy      = require('lib.roomy'):getInstance()
+local Flux       = require('lib.flux')
+love.assets      = require('lib.cargo').init({
     dir = 'assets',
     processors = {
         ['images/'] = function(image, filename)
@@ -40,7 +41,10 @@ end
 
 
 function love.update(dt)
+    Flux.update(dt)
+
     Controller:update()
+
     LuiDebug:update(dt)
 end
 

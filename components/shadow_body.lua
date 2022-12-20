@@ -1,11 +1,11 @@
 local Component = require('class.component')
 
 ---@class ShadowComponent : Component
----@field position PositionComponent
----@field size     SizeComponent
----@field radius   RadiusComponent
----@field shadow any
----@field world any
+---@field position      PositionComponent
+---@field size          SizeComponent
+---@field radius        RadiusComponent
+---@field shadow        any
+---@field world         any
 local ShadowComponent = setmetatable({}, { __index = Component })
 
 
@@ -19,6 +19,8 @@ function ShadowComponent:update(dt, context)
             self.position.x,
             self.position.y)
     end
+
+    self.shadow:setAlpha(self.color.a)
 end
 
 
@@ -27,6 +29,7 @@ function ShadowComponent:onAdd(context)
     self.position = context:get('position')
     self.size     = context:get('size')
     self.radius   = context:get('radius')
+    self.color    = context:get('color')
 end
 
 
@@ -60,6 +63,7 @@ function ShadowComponent.new(name)
     obj.position = nil
     obj.size     = nil
     obj.radius   = nil
+    obj.color    = nil
 
     obj.shadow = nil
     obj.world  = nil

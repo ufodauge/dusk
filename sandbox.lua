@@ -1,13 +1,6 @@
--- local points = {
---     100, 400,
---     200, 450,
---     300, 400,
---     400, 350,
---     500, 400,
---     600, 450
--- }
+local str = '#afaa65'
 
--- function love.draw()
---     love.graphics.setLineStyle("smooth")
---     love.graphics.line(points)
--- end
+local r, g, b, a
+r, g, b, a = str:gmatch('#(%x%x)(%x%x)(%x%x)')
+
+print(r, g, b, a)

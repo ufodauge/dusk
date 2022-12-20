@@ -14,13 +14,12 @@ local lg = love.graphics
 local Component = require('class.component')
 
 ---@class BallComponent : Component
----@field color    ColorComponent
 ---@field position PositionComponent
 ---@field radius   RadiusComponent
 ---@field body     love.Body
 ---@field fixture  love.Fixture
----@field category  integer
----@field fixed     boolean
+---@field category integer
+---@field fixed    boolean
 local BallComponent = setmetatable({}, { __index = Component })
 
 
@@ -43,7 +42,6 @@ end
 
 ---@param context Context
 function BallComponent:onAdd(context)
-    self.color    = context:get('color')
     self.position = context:get('position')
     self.radius   = context:get('radius')
 end
@@ -59,7 +57,6 @@ end
 function BallComponent.new(name, fixed)
     local obj = Component.new(name)
 
-    obj.color    = nil
     obj.position = nil
     obj.size     = nil
 

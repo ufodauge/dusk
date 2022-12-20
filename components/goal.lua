@@ -45,7 +45,8 @@ function GoalComponent:update(dt, context)
         local cat_a = fix_a:getCategory()
         local cat_b = fix_b:getCategory()
 
-        if cat_a == CATEGORY.PLAYER and cat_b == CATEGORY.GOAL then
+        if cat_a == CATEGORY.PLAYER and cat_b == CATEGORY.GOAL or
+            cat_b == CATEGORY.PLAYER and cat_a == CATEGORY.GOAL then
             Signal.send(EVENT_NAME.GOALED)
             self.goaled = true
             break

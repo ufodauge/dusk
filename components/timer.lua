@@ -49,7 +49,7 @@ function TimerComponent:draw(context)
         return
     end
 
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     lg.setFont(self.text.font)
     lg.print(
         (self.text.text):format(

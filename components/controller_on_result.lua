@@ -33,6 +33,7 @@ local ControllerOnResultComponent = setmetatable({}, { __index = Component })
 function ControllerOnResultComponent:update(dt, context)
     if Controller:pressed('action') then
         Signal.send(EVENT_NAME.RETURN_TO_STAGE_SELECT)
+        Roomy:pop()
         Roomy:enter(GameScene, "world_1")
     end
 end

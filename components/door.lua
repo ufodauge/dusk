@@ -52,7 +52,8 @@ function DoorComponent:update(dt, context)
         local cat_a = fix_a:getCategory()
         local cat_b = fix_b:getCategory()
 
-        if cat_a == CATEGORY.DOOR and cat_b == CATEGORY.PLAYER then
+        if cat_a == CATEGORY.DOOR and cat_b == CATEGORY.PLAYER or
+            cat_b == CATEGORY.DOOR and cat_a == CATEGORY.PLAYER then
             if Controller:pressed('cancel') then
                 Signal.send(EVENT_NAME.ENTER_TO_LEVEL, self.level)
                 Roomy:enter(GameScene, self.level)
@@ -65,7 +66,7 @@ end
 
 ---@param context Context
 function DoorComponent:draw(context)
-    lg.setColor(self.color.color_table)
+    self.color:setColor()
     lg.circle(
         'fill',
         self.position.x + cos(self.rotation.rot) * self.radius.r * 2,
