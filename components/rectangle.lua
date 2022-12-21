@@ -11,6 +11,8 @@ local Component = require('class.component')
 ---@field color    ColorComponent
 ---@field position PositionComponent
 ---@field size     SizeComponent
+---@field rx       number
+---@field ry       number
 local RectangleComponent = setmetatable({}, { __index = Component })
 
 
@@ -25,7 +27,8 @@ function RectangleComponent:draw(context)
     self.color:setColor()
     lg.rectangle('fill',
         self.position.x, self.position.y,
-        self.size.w, self.size.h)
+        self.size.w, self.size.h,
+        self.rx, self.ry)
 end
 
 
@@ -44,16 +47,19 @@ end
 
 ---@param name string
 ---@return RectangleComponent|Component
-function RectangleComponent.new(name)
-    local obj = Component.new(name)
+function RectangleComponent.new(name, rx, ry)
+    local self = Component.new(name)
 
-    obj.color    = nil
-    obj.position = nil
-    obj.size     = nil
+    self.color    = nil
+    self.position = nil
+    self.size     = nil
 
-    local mt = getmetatable(obj)
+    self.rx = rx
+    self.ry = ry
+
+    local mt = getmetatable(self)
     mt.__index = RectangleComponent
-    return setmetatable(obj, mt)
+    return setmetatable(self, mt)
 end
 
 

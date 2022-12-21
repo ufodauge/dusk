@@ -1,16 +1,29 @@
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local LuiDebug   = require('lib.luidebug')
-local Roomy      = require('lib.roomy'):getInstance()
-local Signal     = require('lib.signal')
-local EVENT_NAME = require('data.event_name')
+local LuiDebug = require('lib.luidebug')
+local Roomy    = require('lib.roomy'):getInstance()
+local Signal   = require('lib.signal')
+local Bitser   = require('lib.bitser')
+local Lume     = require('lib.lume')
+local util     = require('lib.util')
+
+
+--------------------------------------------------------------
+-- constants
+--------------------------------------------------------------
+local EVENT_NAME                     = require('data.event_name')
+local RECORDS_COUNT                  = require('data.constants').RECORDS_COUNT
+local TIMER_FORMAT                   = '%02d:%02d.%02d'
+local SAVEDATA_FILENAME              = require('data.constants').SAVEDATA_FILENAME
+local DEFAULT_LEVEL_LEADERBOARD_DATA = require('data.constants').DEFAULT_LEVEL_LEADERBOARD_DATA
 
 
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
 local lg = love.graphics
+local lf = love.filesystem
 
 
 local Component = require('class.component')
@@ -39,7 +52,7 @@ function TimerComponent:update(dt, context)
         return
     end
 
-    self.time = self.time + dt
+    self.time = util.clamp_time(self.time + dt)
 end
 
 
@@ -52,7 +65,7 @@ function TimerComponent:draw(context)
     self.color:setColor()
     lg.setFont(self.text.font)
     lg.print(
-        (self.text.text):format(
+        (TIMER_FORMAT):format(
             self.minute,
             self.second,
             self.milisec),
@@ -83,9 +96,22 @@ function TimerComponent:delete()
 end
 
 
+---@param time number
 function TimerComponent:setTime(time)
     self.working = false
-    self.time = time
+    self.time = util.clamp_time(time)
+end
+
+
+function TimerComponent:saveTime(level)
+    ---@type LeaderboardData
+    local leader_board = util.load_times(level)
+
+    leader_board[level][RECORDS_COUNT + 1] = self.time
+    leader_board[level] = Lume.sort(leader_board[level])
+    leader_board[level][RECORDS_COUNT + 1] = nil
+
+    Bitser.dumpLoveFile(SAVEDATA_FILENAME, leader_board)
 end
 
 

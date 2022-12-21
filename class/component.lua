@@ -1,4 +1,5 @@
 ---@class Component
+---@field _name string
 local Component = {}
 
 ---@param dt number

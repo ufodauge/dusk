@@ -1,17 +1,12 @@
 --[[
 TODO: メインスレッド止めるな委員会
-    シェーダーライブラリが重いのに別スレッドから world を返せないから困る
-    こうなるからシェーダーライブラリも自作して制御しやすいように出来た方がいい
-    んだけどそんな時間はない
-    どうしたらメインスレッド止めないようにできたのか
 ]]
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
-local lf  = love.filesystem
-local lp  = love.physics
-local lg  = love.graphics
-local lth = love.thread
+local lf = love.filesystem
+local lp = love.physics
+local lg = love.graphics
 
 
 --------------------------------------------------------------
@@ -33,20 +28,19 @@ local ComponentLoader   = require('class.component_loader')
 local GameObjectManager = require('class.gameobject_manager')
 local lume              = require('lib.lume')
 local LightWorld        = require('lib.lightworld.lib')
-local Coil              = require('lib.coil')
+local Signal            = require('lib.signal')
 local ResultScene       = require('scene.result')
 local Signal            = require('lib.signal')
 
 
 ---@class GameScene : Scene
----@field current_level integer
 local GameScene = {}
-GameScene.current_level = 1
 
-local manager     = {} ---@type GameObjectManager
-local manager_hud = {} ---@type GameObjectManager
-local world       = nil ---@type love.World
-local light_world = nil
+local current_level = 1 ---@type integer
+local manager       = {} ---@type GameObjectManager
+local manager_hud   = {} ---@type GameObjectManager
+local world         = nil ---@type love.World
+local light_world   = nil
 
 
 ---@param prev Scene
@@ -54,7 +48,7 @@ local light_world = nil
 function GameScene:enter(prev, level)
     -- load entire level data
     --------------------------------------------------------------
-    self.current_level = level or self.current_level
+    current_level = level or current_level
 
     -- physics world
     --------------------------------------------------------------
@@ -64,12 +58,13 @@ function GameScene:enter(prev, level)
     -- light world
     --------------------------------------------------------------
     light_world = LightWorld({
-        ambient = { 0.8, 0.8, 0.8 }
+         ambient = { 0.8, 0.8, 0.8 }
     })
-    light_world.post_shader:addEffect('tilt_shift')
+    light_world.post_shader:addEffect('scanlines')
+    light_world.post_shader:addEffect('chromatic_aberration')
 
 
-    local loader = ComponentLoader.new(('data/level/%d.lua'):format(self.current_level))
+    local loader = ComponentLoader.new(('data/world/%d.lua'):format(current_level))
 
     loader:setRelationToSceneBasedObject(
         world,
@@ -82,19 +77,6 @@ function GameScene:enter(prev, level)
         loader:getInstances(), MANAGER_TAG.DEFAULT)
     manager_hud = GameObjectManager.new(
         loader:getInstances(MANAGER_TAG.HUD), MANAGER_TAG.HUD)
-
-
-    LuiDebug.debug_menu:addCommand('goal', function()
-        Signal.send(EVENT_NAME.GOALED)
-    end)
-
-    -- events
-    --------------------------------------------------------------
-    self._send_goal_time = function(time)
-        light_world.post_shader:addEffect('blur', 10.0, 10.0)
-        Roomy:push(ResultScene, time)
-    end
-    Signal.subscribe(EVENT_NAME.SEND_GOAL_TIME, self._send_goal_time)
 end
 
 
@@ -131,9 +113,6 @@ function GameScene:leave(next)
     manager_hud:delete()
 
     world:destroy()
-    LuiDebug.debug_menu:removeCommand('goal')
-
-    Signal.unsubscribe(EVENT_NAME.SEND_GOAL_TIME, self._send_goal_time)
 end
 
 

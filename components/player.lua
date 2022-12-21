@@ -17,7 +17,7 @@ local quadout    = require('lib.easing.quad').o
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local POP_STRENGTH = 190
+local POP_STRENGTH = 170
 local CATEGORY     = require('data.box2d_category')
 local EVENT_NAME   = require('data.event_name')
 

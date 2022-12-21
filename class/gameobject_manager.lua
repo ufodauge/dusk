@@ -1,6 +1,9 @@
 ---@class GameObjectManager
 ---@field instances GameObject[]
+---@field tag ManagerTag
 local GameObjectManager = {}
+
+local managers = {}
 
 
 ---@param dt number
@@ -34,6 +37,20 @@ function GameObjectManager:delete()
         end
         self.instances[i] = nil
     end
+
+    managers[self.tag] = nil
+end
+
+
+---@param tag ManagerTag
+---@return GameObjectManager|nil
+function GameObjectManager:getManager(tag)
+    if managers[tag] then
+        return managers[tag]
+    else
+        print(("there's no manager of tag '%s'"):format(tag))
+        return nil
+    end
 end
 
 
@@ -45,18 +62,27 @@ function GameObjectManager:getObjectById(id)
             return self.instances[i]
         end
     end
+    print(("there's no game object of id '%s'"):format(id))
     return nil
 end
 
 
 ---@param instances GameObject[]
+---@param tag       string|number
 ---@return GameObjectManager
-function GameObjectManager.new(instances)
+function GameObjectManager.new(instances, tag)
+    if managers[tag] then
+        error(("tag %s is already used"):format(tag))
+    end
+
     local obj = {}
 
     obj.instances = instances
+    obj.tag       = tag
 
-    return setmetatable(obj, { __index = GameObjectManager })
+    managers[tag] = setmetatable(obj, { __index = GameObjectManager })
+
+    return managers[tag]
 end
 
 

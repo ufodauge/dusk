@@ -13,6 +13,8 @@ local LuiDebug          = require('lib.luidebug'):getInstance()
 local Roomy             = require('lib.roomy'):getInstance()
 local ComponentLoader   = require('class.component_loader')
 local GameObjectManager = require('class.gameobject_manager')
+local MANAGER_TAG       = require('data.manager_tag')
+local RECORDS_COUNT     = require('data.constants').RECORDS_COUNT
 
 
 --------------------------------------------------------------
@@ -32,10 +34,23 @@ function ResultScene:enter(prev, time)
     GameScene = prev
 
     local loader = ComponentLoader.new('data/result_layout.lua')
-    loader:setRelationToSceneBasedObject(time, 'setTime')
 
     manager = GameObjectManager.new(
-        loader:getInstances())
+        loader:getInstances(), MANAGER_TAG.RESULT)
+
+    local timer = manager
+        :getObjectById('timer')
+        :getComponentByName('timer') --[[@as TimerComponent]]
+
+    timer:setTime(time)
+    timer:saveTime(GameScene.current_level)
+
+    for i = 1, RECORDS_COUNT do
+        local lb = manager
+            :getObjectById(('leaderboard_rank_%d'):format(i))
+            :getComponentByName('leaderboard') --[[@as LeaderboardComponent]]
+        lb:setLeaderboardData(GameScene.current_level)
+    end
 end
 
 

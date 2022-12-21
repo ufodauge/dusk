@@ -20,6 +20,7 @@ local lg = love.graphics
 local Controller = require('class.controller'):getInstance()
 local Roomy      = require('lib.roomy'):getInstance()
 local Flux       = require('lib.flux')
+local Coil       = require('lib.coil')
 love.assets      = require('lib.cargo').init({
     dir = 'assets',
     processors = {
@@ -42,6 +43,7 @@ end
 
 function love.update(dt)
     Flux.update(dt)
+    Coil.update(dt)
 
     Controller:update()
 

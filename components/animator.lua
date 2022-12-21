@@ -1,10 +1,12 @@
 --------------------------------------------------------------
 -- requires
 --------------------------------------------------------------
-local Flux = require('lib.flux')
+local Flux     = require('lib.flux')
+local Signal   = require('lib.signal')
+local LuiDebug = require('lib.luidebug'):getInstance()
 
 
----@class AnimateController
+---@class AnimationController
 ---@field [1] number
 ---@field [2] table<string, number|boolean>|nil
 ---@field [3] EaseType
@@ -17,10 +19,12 @@ local Flux = require('lib.flux')
 local Component = require('class.component')
 
 ---@class AnimatorComponent : Component
----@field _tween Tween
----@field _defaults any[]
----@field comp_name  string
----@field controllers AnimateController[]
+---@field _tween      Tween
+---@field _defaults   table<Component, table<string, number|boolean>>
+---@field comp_name   string
+---@field signal      string
+---@field controllers AnimationController[]
+---@field _registerAnimationWrapper function
 local AnimatorComponent = setmetatable({}, { __index = Component })
 
 ---@param dt number
@@ -39,6 +43,23 @@ end
 ---@param context Context
 function AnimatorComponent:onAdd(context)
     self._tween = nil
+    if self.signal then
+        self._registerAnimationWrapper = function()
+            self:_registerAnimations(context)
+        end
+        Signal.subscribe(self.signal, self._registerAnimationWrapper)
+    else
+        self:_registerAnimations(context)
+    end
+end
+
+
+---@param context Context
+function AnimatorComponent:_registerAnimations(context)
+    if self._tween then
+        self._tween:stop()
+        self._tween = nil
+    end
     for _, controller in ipairs(self.controllers) do
         local comp = context:get(self.comp_name)
         self:_chainAnimation(comp, controller)
@@ -47,7 +68,7 @@ end
 
 
 ---@param comp Component
----@param controller AnimateController
+---@param controller AnimationController
 function AnimatorComponent:_chainAnimation(comp, controller)
     local slice = {}
     local bools = {}
@@ -102,22 +123,28 @@ end
 
 function AnimatorComponent:delete()
     self._tween:stop()
+    if self.signal then
+        Signal.unsubscribe(self.signal, self._registerAnimationWrapper)
+    end
 end
 
 
----@param name       string
----@param comp_name  string
----@param controllers AnimateController[] component's name to control
+---@param name        string
+---@param comp_name   string  # component's name to control
+---@param controllers AnimationController[]
+---@param signal      string  # event's name
 ---@return AnimatorComponent|Component
-function AnimatorComponent.new(name, comp_name, controllers)
+function AnimatorComponent.new(name, comp_name, controllers, signal)
     local obj = Component.new(name)
 
     obj._tween = nil
 
     obj.comp_name   = comp_name
     obj.controllers = controllers
+    obj.signal      = signal
 
     obj._defaults = {}
+    obj._registerAnimationWrapper = nil
 
     local mt = getmetatable(obj)
     mt.__index = AnimatorComponent

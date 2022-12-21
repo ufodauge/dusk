@@ -462,10 +462,10 @@ function lume.deepclone(orig)
     copy = {}
 
     for orig_key, orig_value in next, orig, nil do
-      copy[lume.deepcopy(orig_key)] = lume.deepcopy(orig_value)
+      copy[lume.deepclone(orig_key)] = lume.deepclone(orig_value)
     end
 
-    setmetatable(copy, lume.deepcopy(getmetatable(orig)))
+    setmetatable(copy, lume.deepclone(getmetatable(orig)))
   else
     -- number, string, boolean, etc
     copy = orig

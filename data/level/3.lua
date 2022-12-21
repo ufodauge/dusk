@@ -1,13 +1,13 @@
 local MANAGER_TAG = require('data.manager_tag')
 local hex2tbl     = require('lib.lume').color
-local pink        = require('data.color_palette').pink
-local indigo      = require('data.color_palette').indigo
+local cyan        = require('data.color_palette').cyan
+local amber       = require('data.color_palette').amber
 
 return {
     {
         { 'position', 0, 0 },
         { 'size', 1280, 720 },
-        { 'color', { hex2tbl(pink['50'] .. '00') } },
+        { 'color', { hex2tbl(cyan['50'] .. '00') } },
         { 'rectangle' },
         { 'animator', 'color', {
           { 1, { a = 1 } },
@@ -17,7 +17,7 @@ return {
     {
         { 'position', 0, 0 },
         { 'size', 40, 720 },
-        { 'color', { hex2tbl(pink['300'] .. '00') } },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -26,23 +26,6 @@ return {
         },
         { 'animator', 'position', {
             { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 40, 680 },
-        { 'size', 1200, 40 },
-        { 'color', { hex2tbl(pink['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = 380 } },
             { 1, nil },
           }
         },
@@ -51,7 +34,7 @@ return {
     {
         { 'position', 1240, 0 },
         { 'size', 40, 720 },
-        { 'color', { hex2tbl(pink['300'] .. '00') } },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -65,15 +48,71 @@ return {
         },
         { 'shadow_body' },
     },
+    --------------------------------------------------------------
+    {
+        { 'position', 40, 320 },
+        { 'size', 400, 400 },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'moving_platform', 0, 200, 8, true },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 840, 320 },
+        { 'size', 400, 400 },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'moving_platform', 0, 200, 8, true },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 440, 520 },
+        { 'size', 400, 400 },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'moving_platform', 0, -200, 8, true },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    --------------------------------------------------------------
     {
         { 'bubble_factory',
           { occurrence = 0.03, size_max = 30, size_min = 5 } },
     },
     {
         _delay = 1.5,
-        { 'position', 160, 450 },
+        { 'position', 220, 240 },
         { 'radius', 26 },
-        { 'color', { hex2tbl(pink['500'] .. '00') } },
+        { 'color', { hex2tbl(cyan['500'] .. '00') } },
         { 'blob' },
         { 'shadow_body' },
         { 'animator', 'color', {
@@ -84,9 +123,9 @@ return {
         { 'player_ui', },
     },
     {
-        { 'position', 1000, 500 },
+        { 'position', 1060, 240 },
         { 'radius', 10 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'color', { hex2tbl(amber['300'] .. '00') } },
         { 'circle' },
         { 'ball', true },
         { 'goal' },

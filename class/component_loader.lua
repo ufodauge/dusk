@@ -9,7 +9,7 @@ local TAG_DEFAULT = 'default'
 --------------------------------------------------------------
 local LuiDebug   = require('lib.luidebug'):getInstance()
 local GameObject = require('class.gameobject')
-local Flux       = require('lib.flux')
+local Coil       = require('lib.coil')
 
 
 --------------------------------------------------------------
@@ -46,15 +46,16 @@ function ComponentLoader:_load()
     for _, data in ipairs(self.components_data) do
 
         -- object
+        local delay       = data._delay
+        local tag         = data._tag or TAG_DEFAULT
         local game_object = GameObject.new()
-        local delay = data._delay
-        local tag = data._tag or TAG_DEFAULT
-        game_object.id = data._id or '_'
+        game_object.id    = data._id
 
         -- add components
         --------------------------------------------------------------
         if delay then
-            Flux.to({}, delay, {}):oncomplete(function()
+            Coil.add(function()
+                Coil.wait(delay)
                 self:_addComponents(game_object, data)
             end)
         else
@@ -100,7 +101,7 @@ function ComponentLoader:_addComponents(game_object, data)
 end
 
 
----@param tag? string
+---@param tag? number
 ---@return GameObject[]
 function ComponentLoader:getInstances(tag)
     self:_load()

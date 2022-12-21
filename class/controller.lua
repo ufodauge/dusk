@@ -41,7 +41,7 @@ end
 ---@param key_type? "keyboard"|"joystick"|"gamepad"
 ---@return table
 function Controller:getControlConfig(key_type)
-    local control_conf = Lume.deepcopy(self.config.controls)
+    local control_conf = Lume.deepclone(self.config.controls)
 
     local pattern = nil
     if key_type == 'keyboard' then

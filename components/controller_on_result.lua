@@ -8,11 +8,12 @@ local lg = love.graphics
 --------------------------------------------------------------
 -- require
 --------------------------------------------------------------
-local Controller = require('class.controller'):getInstance()
-local Signal     = require('lib.signal')
-local LuiDebug   = require('lib.luidebug'):getInstance()
-local Roomy      = require('lib.roomy'):getInstance()
-local GameScene  = require('scene.game')
+local Controller       = require('class.controller'):getInstance()
+local Signal           = require('lib.signal')
+local LuiDebug         = require('lib.luidebug'):getInstance()
+local Roomy            = require('lib.roomy'):getInstance()
+local StageSelectScene = require('scene.stage_select')
+local Coil             = require('lib.coil')
 
 
 --------------------------------------------------------------
@@ -33,8 +34,11 @@ local ControllerOnResultComponent = setmetatable({}, { __index = Component })
 function ControllerOnResultComponent:update(dt, context)
     if Controller:pressed('action') then
         Signal.send(EVENT_NAME.RETURN_TO_STAGE_SELECT)
-        Roomy:pop()
-        Roomy:enter(GameScene, "world_1")
+        Coil.add(function()
+            Coil.wait(1)
+            Roomy:pop()
+            Roomy:enter(StageSelectScene, 1)
+        end)
     end
 end
 
