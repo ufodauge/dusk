@@ -47,6 +47,19 @@ return {
         },
     },
     {
+        { 'position', 300, 480 },
+        { 'size', 680, 40 },
+        { 'color', { hex2tbl(blue_gray['300']) } },
+        { 'rectangle' },
+        { 'block' },
+        { 'shadow_body' },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1.5, nil },
+          }
+        },
+    },
+    {
         { 'position', 1280, 0 },
         { 'size', 40, 720 },
         { 'color', { hex2tbl(blue_gray['300']) } },
@@ -107,6 +120,60 @@ return {
         { 'circle' },
         { 'ball', true },
         { 'door', 3 },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'lighting', 3.0 },
+    },
+    -- lv 4
+    --------------------------------------------------------------
+    {
+        _delay = 1.5,
+        _id = LEVEL_TAG[4],
+        { 'position', 340, 430 },
+        { 'radius', 20 },
+        { 'rotation', 0 },
+        { 'color', { hex2tbl(orange['300'] .. '00') } },
+        { 'circle' },
+        { 'ball', true },
+        { 'door', 4 },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'lighting', 3.0 },
+    },
+    -- lv 5
+    --------------------------------------------------------------
+    {
+        _delay = 1.5,
+        _id = LEVEL_TAG[5],
+        { 'position', 640, 430 },
+        { 'radius', 20 },
+        { 'rotation', 0 },
+        { 'color', { hex2tbl(orange['300'] .. '00') } },
+        { 'circle' },
+        { 'ball', true },
+        { 'door', 5 },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'lighting', 3.0 },
+    },
+    -- lv 6
+    --------------------------------------------------------------
+    {
+        _delay = 1.5,
+        _id = LEVEL_TAG[6],
+        { 'position', 940, 430 },
+        { 'radius', 20 },
+        { 'rotation', 0 },
+        { 'color', { hex2tbl(orange['300'] .. '00') } },
+        { 'circle' },
+        { 'ball', true },
+        { 'door', 6 },
         { 'animator', 'color', {
             { 1, { a = 1 } },
           }

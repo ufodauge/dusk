@@ -1,13 +1,13 @@
 local MANAGER_TAG = require('data.manager_tag')
 local hex2tbl     = require('lib.lume').color
-local indigo        = require('data.color_palette').indigo
-local lime        = require('data.color_palette').lime
+local deep_orange = require('data.color_palette').deep_orange
+local cyan        = require('data.color_palette').cyan
 
 return {
     {
         { 'position', 0, 0 },
         { 'size', 1280, 720 },
-        { 'color', { hex2tbl(indigo['50'] .. '00') } },
+        { 'color', { hex2tbl(deep_orange['50'] .. '00') } },
         { 'rectangle' },
         { 'animator', 'color', {
           { 1, { a = 1 } },
@@ -15,9 +15,9 @@ return {
         },
     },
     {
-        { 'position', 0, 0 },
-        { 'size', 40, 720 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'position', 840, 0 },
+        { 'size', 440, 720 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -32,9 +32,9 @@ return {
         { 'shadow_body' },
     },
     {
-        { 'position', 40, 680 },
-        { 'size', 1200, 40 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'position', 440, 680 },
+        { 'size', 400, 40 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -49,9 +49,9 @@ return {
         { 'shadow_body' },
     },
     {
-        { 'position', 1240, 0 },
-        { 'size', 40, 720 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'position', 0, 0 },
+        { 'size', 440, 720 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -67,95 +67,9 @@ return {
     },
     --------------------------------------------------------------
     {
-        { 'position', 40, 320 },
-        { 'size', 200, 40 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'moving_platform', 600, 0, 8, true },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 40, 360 },
-        { 'size', 200, 320 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 240, 400 },
-        { 'size', 200, 280 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 440, 480 },
-        { 'size', 200, 200 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 640, 560 },
-        { 'size', 200, 120 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
-        { 'rectangle' },
-        { 'block' },
-        { 'animator', 'color', {
-            { 1, { a = 1 } },
-          }
-        },
-        { 'animator', 'position', {
-            { 0, { y = -300 } },
-            { 1, nil },
-          }
-        },
-        { 'shadow_body' },
-    },
-    {
-        { 'position', 840, 640 },
+        { 'position', 440, 680 },
         { 'size', 400, 40 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -170,9 +84,77 @@ return {
         { 'shadow_body' },
     },
     {
-        { 'position', 900, 240 },
-        { 'size', 340, 160 },
-        { 'color', { hex2tbl(indigo['300'] .. '00') } },
+        { 'position', 440, 580 },
+        { 'size', 140, 20 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 440, 400 },
+        { 'size', 140, 20 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 440, 200 },
+        { 'size', 140, 20 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 700, 480 },
+        { 'size', 140, 20 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
+        { 'rectangle' },
+        { 'block' },
+        { 'animator', 'color', {
+            { 1, { a = 1 } },
+          }
+        },
+        { 'animator', 'position', {
+            { 0, { y = -300 } },
+            { 1, nil },
+          }
+        },
+        { 'shadow_body' },
+    },
+    {
+        { 'position', 700, 300 },
+        { 'size', 140, 20 },
+        { 'color', { hex2tbl(deep_orange['300'] .. '00') } },
         { 'rectangle' },
         { 'block' },
         { 'animator', 'color', {
@@ -193,9 +175,9 @@ return {
     },
     {
         _delay = 1.5,
-        { 'position', 1140, 540 },
+        { 'position', 780, 620 },
         { 'radius', 26 },
-        { 'color', { hex2tbl(indigo['500'] .. '00') } },
+        { 'color', { hex2tbl(deep_orange['500'] .. '00') } },
         { 'blob' },
         { 'shadow_body' },
         { 'animator', 'color', {
@@ -206,9 +188,9 @@ return {
         { 'player_ui', },
     },
     {
-        { 'position', 1140, 140 },
+        { 'position', 500, 120 },
         { 'radius', 10 },
-        { 'color', { hex2tbl(lime['300'] .. '00') } },
+        { 'color', { hex2tbl(cyan['300'] .. '00') } },
         { 'circle' },
         { 'ball', true },
         { 'goal' },
