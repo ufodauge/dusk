@@ -16,6 +16,11 @@ local EVENT_NAME = require('data.event_name')
 --------------------------------------------------------------
 local lp = love.physics
 local lg = love.graphics
+local assets = love.assets
+
+local SE = {
+    GOALED = assets.sound.clear
+}
 
 
 local Component = require('class.component')
@@ -49,6 +54,7 @@ function GoalComponent:update(dt, context)
             cat_b == CATEGORY.PLAYER and cat_a == CATEGORY.GOAL then
             Signal.send(EVENT_NAME.GOALED)
             self.goaled = true
+            SE.GOALED:play()
             break
         end
     end

@@ -8,10 +8,11 @@ TODO: メインスレッド止めるな委員会
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
-local lf  = love.filesystem
-local lp  = love.physics
-local lg  = love.graphics
-local lth = love.thread
+local lf     = love.filesystem
+local lp     = love.physics
+local lg     = love.graphics
+local lth    = love.thread
+local assets = love.assets
 
 
 --------------------------------------------------------------
@@ -48,6 +49,10 @@ local manager_hud = {} ---@type GameObjectManager
 local world       = nil ---@type love.World
 local light_world = nil
 
+local SE = {
+    START = assets.sound.paper
+}
+
 
 ---@param prev Scene
 ---@param level integer
@@ -83,6 +88,8 @@ function GameScene:enter(prev, level)
     manager_hud = GameObjectManager.new(
         loader:getInstances(MANAGER_TAG.HUD), MANAGER_TAG.HUD)
 
+
+    SE.START:play()
 
     LuiDebug.debug_menu:addCommand('goal', function()
         Signal.send(EVENT_NAME.GOALED)

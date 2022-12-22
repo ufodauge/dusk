@@ -1,9 +1,9 @@
 --------------------------------------------------------------
 -- constants
 --------------------------------------------------------------
-local NODE_RADIUS      = 2
+local NODE_RADIUS = 2
 local PHYSICS_POLYGONS = require('data.constants').PHYSICS_POLYGONS
-local CATEGORY         = require('data.box2d_category')
+local CATEGORY = require('data.box2d_category')
 
 --------------------------------------------------------------
 -- require
@@ -11,11 +11,16 @@ local CATEGORY         = require('data.box2d_category')
 local Blob = require('lib.blob')
 local LuiDebug = require('lib.luidebug'):getInstance()
 
-
 --------------------------------------------------------------
 -- shorthands
 --------------------------------------------------------------
 local lg = love.graphics
+local assets = love.assets
+
+
+local SE = {
+    BOUND = assets.sound['pop-up'] --[[@as love.Source]]
+}
 
 
 local Component = require('class.component')
@@ -25,6 +30,7 @@ local Component = require('class.component')
 ---@field position  PositionComponent
 ---@field radius    RadiusComponent
 ---@field blob      Blob
+---@field _world    love.World
 ---@field category  integer
 ---@field fixed     boolean
 local BlobComponent = setmetatable({}, { __index = Component })
@@ -35,6 +41,23 @@ local BlobComponent = setmetatable({}, { __index = Component })
 function BlobComponent:update(dt, context)
     self.blob:update()
     self.position.x, self.position.y = self.blob.kernel_body:getPosition()
+
+    -- if self._world:getContactCount() == 0 then
+    --     return
+    -- end
+
+    -- local contacts = self._world:getContacts()
+
+    -- for _, contact in ipairs(contacts) do
+    --     local fix_a, fix_b = contact:getFixtures()
+    --     local cat_a = fix_a:getCategory()
+    --     local cat_b = fix_b:getCategory()
+
+    --     if cat_a == CATEGORY.PLAYER or cat_b == CATEGORY.PLAYER then
+    --         SE.BOUND:play()
+    --         break
+    --     end
+    -- end
 end
 
 
@@ -89,6 +112,8 @@ function BlobComponent:createPhysicsObject(world)
     if self.fixed then
         self.blob:fixPosition()
     end
+
+    self._world = world
 end
 
 

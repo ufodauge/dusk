@@ -12,6 +12,8 @@ end
 -- shorthands
 --------------------------------------------------------------
 local lg = love.graphics
+local ls = love.sound
+local la = love.audio
 
 
 --------------------------------------------------------------
@@ -23,12 +25,22 @@ local Flux       = require('lib.flux')
 local Coil       = require('lib.coil')
 love.assets      = require('lib.cargo').init({
     dir = 'assets',
+    loaders = {
+        wav = function(wav)
+            return la.newSource(ls.newSoundData(wav))
+        end
+    },
     processors = {
         ['images/'] = function(image, filename)
             image:setFilter('nearest', 'nearest')
-        end
+        end,
+        ['sound/'] = function(wav, filename)
+            wav:setVolume(0.1)
+        end,
     }
 })
+local GameScene = require('scene.game')
+
 
 LuiDebug:addFlag(require('data.constants').PHYSICS_POLYGONS)
 
@@ -38,6 +50,8 @@ function love.load()
 
     LuiDebug:setRoomy(Roomy)
     LuiDebug:setScenePath('scene')
+
+    Roomy:enter(GameScene, 1)
 end
 
 
