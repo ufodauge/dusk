@@ -47,8 +47,8 @@ function Controller:getControlConfig(key_type)
     if key_type == 'keyboard' then
         pattern = 'key:(%w+)'
     elseif key_type == 'joystick' then
-        pattern = 'axis:(%w+)'
-    elseif key_type == 'gamepad' then
+    --     pattern = 'axis:(%w+)'
+    -- elseif key_type == 'gamepad' then
         pattern = 'button:(%w+)'
     else
         error('unreachable')
@@ -139,21 +139,21 @@ function Controller.new()
 
 
     obj.latest_controller_type = 'keyboard'
-    local _kerpressed = love.kerpressed
+    local _kerpressed = love.kerpressed or function() end
     function love.kerpressed(key, scancode, isrepeat)
         _kerpressed(key, scancode, isrepeat)
         obj.latest_controller_type = 'keyboard'
     end
 
 
-    local _gamepadpressed = love.gamepadpressed
+    local _gamepadpressed = love.gamepadpressed or function() end
     function love.gamepadpressed(key, scancode, isrepeat)
         _gamepadpressed(key, scancode, isrepeat)
         obj.latest_controller_type = 'gamepad'
     end
 
 
-    local _joystickpressed = love.joystickpressed
+    local _joystickpressed = love.joystickpressed or function() end
     function love.joystickpressed(key, scancode, isrepeat)
         _joystickpressed(key, scancode, isrepeat)
         obj.latest_controller_type = 'joystick'
