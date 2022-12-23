@@ -39,14 +39,16 @@ love.assets      = require('lib.cargo').init({
         end,
     }
 })
-local GameScene = require('scene.game')
+local GameScene  = require('scene.game')
 
 
 LuiDebug:addFlag(require('data.constants').PHYSICS_POLYGONS)
 
 
 function love.load()
-    Roomy:hook()
+    Roomy:hook {
+        exclude = { 'update', 'draw' },
+    }
 
     LuiDebug:setRoomy(Roomy)
     LuiDebug:setScenePath('scene')
@@ -61,10 +63,13 @@ function love.update(dt)
 
     Controller:update()
 
+    Roomy:emit('update', dt)
+
     LuiDebug:update(dt)
 end
 
 
 function love.draw()
+    Roomy:emit('draw')
     LuiDebug:draw()
 end

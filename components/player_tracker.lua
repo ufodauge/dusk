@@ -41,14 +41,14 @@ function PlayerTrackerComponent:onAdd(context)
     end
 
     Signal.subscribe(
-        EVENT_NAME.SEND_PLAYER_POSITION,
+        EVENT_NAME.SEND_NEARBY_DOOR_POSITION,
         self._set_position)
 end
 
 
 function PlayerTrackerComponent:delete()
     Signal.unsubscribe(
-        EVENT_NAME.SEND_PLAYER_POSITION,
+        EVENT_NAME.SEND_NEARBY_DOOR_POSITION,
         self._set_position)
 end
 

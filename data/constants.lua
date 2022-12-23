@@ -3,11 +3,11 @@ return {
     SAVEDATA_FILENAME = 'dusk_save',
     ---@type LevelLeaderboardData
     DEFAULT_LEVEL_LEADERBOARD_DATA = {
-        -1,
-        -1,
-        -1,
-        -1,
-        -1
+        math.huge,
+        math.huge,
+        math.huge,
+        math.huge,
+        math.huge
     },
     RECORDS_COUNT = 5
 }

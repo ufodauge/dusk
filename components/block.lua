@@ -40,6 +40,7 @@ function BlockComponent:createPhysicsObject(world)
     local fixture = lp.newFixture(body, shape)
 
     fixture:setRestitution(RESISTITUTION)
+    fixture:setFriction(1)
 
     self.fixture = fixture
     self.body    = body

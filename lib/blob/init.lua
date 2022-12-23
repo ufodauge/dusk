@@ -149,7 +149,7 @@ function Blob.new(world, x, y, r, nr)
         local node_y = y + r * math.sin(angle)
 
         local node_body = lp.newBody(world, node_x, node_y, 'dynamic')
-        node_body:setAngularDamping(50)
+        node_body:setAngularDamping(100)
 
         local node_fixture = lp.newFixture(node_body, node_shape)
         node_fixture:setFriction(30)

@@ -72,12 +72,6 @@ function DoorComponent:update(dt, context)
                 end)
             end
 
-            if cat_a == CATEGORY.PLAYER then
-                pl_x, pl_y = fix_a:getBody():getPosition()
-            else
-                pl_x, pl_y = fix_b:getBody():getPosition()
-            end
-
             is_player_closer_the_door = true
 
             break
@@ -92,8 +86,8 @@ function DoorComponent:update(dt, context)
             EVENT_NAME.PLAYER_GETS_CLOSER_THE_DOOR,
             self.level)
         Signal.send(
-            EVENT_NAME.SEND_PLAYER_POSITION,
-            pl_x, pl_y)
+            EVENT_NAME.SEND_NEARBY_DOOR_POSITION,
+            self.position.x, self.position.y)
     elseif not is_player_closer_the_door and
         current_state == EVENT_NAME.PLAYER_GETS_CLOSER_THE_DOOR then
 

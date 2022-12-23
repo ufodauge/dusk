@@ -54,8 +54,8 @@ function util.load_times(level)
 
     for i = 1, RECORDS_COUNT do
         deserialized[level][i] = type(deserialized[level][i]) == 'number'
-            and deserialized[level][i]
-            or DEFAULT_LEVEL_LEADERBOARD_DATA[i]
+            and util.clamp_time(deserialized[level][i])
+            or util.clamp_time(math.huge)
     end
 
     return deserialized
